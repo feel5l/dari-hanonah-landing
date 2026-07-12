@@ -1,1 +1,377 @@
-PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImFyIiBkaXI9InJ0bCI+CjxoZWFkPgogIDxtZXRhIGNoYXJzZXQ9IlVURi04IiAvPgogIDxtZXRhIG5hbWU9InZpZXdwb3J0IiBjb250ZW50PSJ3aWR0aD1kZXZpY2Utd2lkdGgsIGluaXRpYWwtc2NhbGU9MSIgLz4KICA8dGl0bGU+TWlncmF0ZWQgZnJvbSBBSSAtIHBsZWFzZSByZXBsYWNlIHdpdGggdGhlIGxhdGVzdCBgZGFyaV9sYW5kaW5nX2ZpbmFsLmh0bWxgPC90aXRsZT4KPC9oZWFkPgo8Ym9keT4KICA8cD5UaGlzIGZpbGUgaXMgYSBwbGFjZWhvbGRlci4gUGxlYXNlIHJlcGxhY2UgaXRzIGNvbnRlbnRzIHdpdGggdGhlIGxhdGVzdCBgZGFyaV9sYW5kaW5nX2ZpbmFsLmh0bWxgIGZyb20gdGhlIEFNSS48L3A+CjwvYm9keT4KPC9odG1sPgo=
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>مركز داري الحنونة الأهلية لضيافة الأطفال</title>
+  <style>
+    body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#f8fafc; color:#0f172a; }
+    * { box-sizing: border-box; }
+    a { text-decoration: none; }
+    .container { width:100%; max-width:1100px; margin:0 auto; padding:0 1.25rem; }
+    .topbar { background:#0f766e; color:#ecfeff; font-size:0.9rem; }
+    .topbar-inner { display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0; gap:0.75rem; }
+    .topbar a { color:#ecfeff; font-weight:600; padding:0.35rem 0.8rem; border-radius:999px; border:1px solid rgba(240,253,250,0.7); }
+
+    header.hero { background:linear-gradient(135deg,#0f766e,#14b8a6); color:white; padding:2.5rem 0 2.75rem; }
+    .hero-grid { display:grid; grid-template-columns:1.2fr 1fr; gap:2rem; align-items:center; }
+    @media (max-width: 850px) { .hero-grid { grid-template-columns:1fr; } }
+    .hero-title { font-size:2.2rem; margin:0 0 1rem; line-height:1.4; }
+    .hero-sub { font-size:1rem; line-height:1.8; margin-bottom:1.2rem; }
+    .hero-badges { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.4rem; }
+    .badge { background:rgba(15,23,42,0.18); padding:0.25rem 0.65rem; border-radius:999px; font-size:0.82rem; }
+    .hero-actions { display:flex; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; }
+    .btn-primary { background:#f97316; color:#fff; padding:0.7rem 1.3rem; border-radius:999px; font-weight:600; border:none; cursor:pointer; font-size:0.95rem; }
+    .btn-secondary { background:transparent; color:#ecfeff; padding:0.65rem 1.1rem; border-radius:999px; border:1px solid rgba(240,253,250,0.7); font-weight:500; cursor:pointer; font-size:0.9rem; }
+
+    .lead-box { background:#ecfeff; color:#0f172a; padding:1rem 1rem 1.2rem; border-radius:0.9rem; box-shadow:0 18px 40px rgba(15,23,42,0.32); }
+    .lead-box h3 { margin-top:0; margin-bottom:0.8rem; font-size:1.05rem; }
+    .lead-form { display:flex; flex-direction:column; gap:0.55rem; }
+    .lead-form label { font-size:0.8rem; font-weight:600; color:#0f172a; }
+    .lead-form input, .lead-form select, .lead-form textarea { width:100%; border-radius:0.55rem; border:1px solid #cbd5e1; padding:0.5rem 0.6rem; font-family:inherit; font-size:0.9rem; }
+    .lead-form textarea { min-height:60px; resize:vertical; }
+    .hint { font-size:0.75rem; color:#6b7280; }
+
+    section { padding:2.5rem 0; }
+    section.alt { background:#e2f3f5; }
+    section h2 { font-size:1.6rem; margin:0 0 0.8rem; }
+    section p.sec-intro { font-size:0.97rem; color:#4b5563; max-width:720px; margin:0 0 1.4rem; }
+
+    .why-grid { display:grid; gap:1.1rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    @media (max-width:800px) { .why-grid { grid-template-columns:1fr; } }
+    .card { background:#ffffff; border-radius:0.9rem; padding:1rem 1rem 1.1rem; box-shadow:0 4px 16px rgba(15,23,42,0.06); border:1px solid #e5e7eb; }
+    .card h3 { margin:0 0 0.4rem; font-size:1rem; }
+    .card p { margin:0; font-size:0.9rem; color:#4b5563; line-height:1.7; }
+
+    .programs-grid { display:grid; gap:1rem; grid-template-columns:repeat(3,minmax(0,1fr)); }
+    @media (max-width:900px) { .programs-grid { grid-template-columns:1fr; } }
+
+    .pill { display:inline-block; padding:0.25rem 0.55rem; border-radius:999px; font-size:0.78rem; background:#e0f2fe; color:#0369a1; margin-bottom:0.35rem; }
+
+    .gallery-grid { display:grid; gap:0.8rem; grid-template-columns:repeat(3,minmax(0,1fr)); }
+    @media (max-width:850px) { .gallery-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (max-width:600px) { .gallery-grid { grid-template-columns:1fr; } }
+    .gallery-item { background:#e5e7eb; border-radius:0.8rem; height:150px; display:flex; align-items:center; justify-content:center; color:#6b7280; font-size:0.85rem; padding:0.5rem; text-align:center; }
+
+    .testimonials { display:grid; gap:1rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    @media (max-width:800px) { .testimonials { grid-template-columns:1fr; } }
+    .testimonial { background:#ffffff; border-radius:0.9rem; padding:1rem 1rem 1rem; border:1px solid #e5e7eb; box-shadow:0 4px 16px rgba(15,23,42,0.04); font-size:0.9rem; line-height:1.8; }
+    .testimonial strong { display:block; margin-top:0.4rem; font-size:0.86rem; color:#0f172a; }
+
+    .faq-item { margin-bottom:0.7rem; }
+    .faq-q { font-weight:600; font-size:0.9rem; margin-bottom:0.15rem; }
+    .faq-a { font-size:0.88rem; color:#4b5563; line-height:1.7; }
+
+    .form-section { background:#0f172a; color:#e5e7eb; }
+    .form-wrap { display:grid; grid-template-columns:1.1fr 1fr; gap:2rem; align-items:flex-start; }
+    @media (max-width:900px) { .form-wrap { grid-template-columns:1fr; } }
+    .form-main label { font-size:0.8rem; font-weight:600; }
+    .form-main input, .form-main select, .form-main textarea { width:100%; border-radius:0.45rem; border:1px solid #4b5563; background:#020617; color:#e5e7eb; padding:0.5rem 0.6rem; font-family:inherit; font-size:0.9rem; margin-bottom:0.6rem; }
+    .form-main textarea { min-height:80px; resize:vertical; }
+    .checkbox-row { display:flex; align-items:flex-start; gap:0.4rem; font-size:0.78rem; margin-bottom:0.7rem; }
+    .checkbox-row input { margin-top:0.15rem; }
+
+    footer { background:#020617; color:#9ca3af; padding:1.2rem 0 1.5rem; font-size:0.8rem; }
+    .footer-grid { display:grid; grid-template-columns:2fr 1fr; gap:1rem; align-items:flex-start; }
+    @media (max-width:800px) { .footer-grid { grid-template-columns:1fr; } }
+    .footer-actions { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.4rem; }
+    .footer-actions a { border-radius:999px; border:1px solid #4b5563; padding:0.35rem 0.7rem; color:#e5e7eb; font-size:0.78rem; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div>حضانة وروضة معتمدة في الأحساء – الهفوف – حي السلمانية، نستقبل أطفالكم من عمر 45 يومًا حتى 6 سنوات.</div>
+      <a href="#lead-form">احجزي استشارة مجانية</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="container hero-grid">
+      <div>
+        <h1 class="hero-title">داري الحنونة… بيت طفلك الثاني في السلمانية</h1>
+        <p class="hero-sub">
+          مركز داري الحنونة الأهلية لضيافة الأطفال – روضة وحضانة نموذجية بمبنى مستقل واسع وساحة خارجية مكيفة بالرش الضبابي،
+          وبرنامج تأسيسي قوي في القرآن واللغة العربية بالقاعدة النورانية واللغة الإنجليزية والحساب، تحت إشراف كادر نسائي سعودي خبير.
+        </p>
+        <div class="hero-badges">
+          <span class="badge">من عمر 45 يومًا حتى 6 سنوات</span>
+          <span class="badge">برنامج قرآني وتعليمي متكامل</span>
+          <span class="badge">متابعة يومية للأم بالصور والفيديو</span>
+          <span class="badge">باقات شهرية وأسبوعية ويومية مرنة</span>
+        </div>
+        <div class="hero-actions">
+          <a href="#visit-form"><button class="btn-primary">احجزي زيارة للمركز الآن</button></a>
+          <a href="https://wa.me/966546425459" target="_blank" rel="noopener"><button class="btn-secondary">راسلينا على واتساب</button></a>
+        </div>
+        <p class="hint">املئي النموذج أو أرسلي لنا على الواتساب، وسيتواصل معك فريق داري الحنونة خلال أقرب وقت.</p>
+      </div>
+      <div>
+        <div class="lead-box" id="lead-form">
+          <h3>استشارة مجانية لاختيار أنسب برنامج لطفلك</h3>
+          <form class="lead-form">
+            <div>
+              <label for="mother-name">اسم الأم</label>
+              <input id="mother-name" type="text" placeholder="اكتبي اسمك" />
+            </div>
+            <div>
+              <label for="phone">رقم الجوال</label>
+              <input id="phone" type="tel" placeholder="05xxxxxxxx" />
+            </div>
+            <div>
+              <label for="child-age">عمر الطفل</label>
+              <select id="child-age">
+                <option>اختاري العمر</option>
+                <option>أقل من سنة</option>
+                <option>1–2 سنة</option>
+                <option>3–4 سنوات</option>
+                <option>5–6 سنوات</option>
+              </select>
+            </div>
+            <div>
+              <label for="service">ما الخدمة التي تبحثين عنها؟</label>
+              <select id="service">
+                <option>اختاري نوع الخدمة</option>
+                <option>حضانة مواليد/صغار</option>
+                <option>حضانة تعليمية (من سنة)</option>
+                <option>روضة / تمهيدي</option>
+              </select>
+            </div>
+            <div>
+              <label for="note">رسالة أو استفسار (اختياري)</label>
+              <textarea id="note" placeholder="اكتبي أي ملاحظة أو استفسار عن طفلك"></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; margin-top:0.3rem;">إرسال طلبي الآن</button>
+            <p class="hint">بالضغط على إرسال، أنتِ توافقين على تواصل المركز معك عبر الجوال أو الواتساب لتزويدك بالمعلومات والعروض.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <h2>لماذا داري الحنونة هي بيت طفلك الثاني؟</h2>
+      <p class="sec-intro">
+        في داري الحنونة نجمع بين الأمان والحنان والتأسيس التعليمي القوي، لتطمئني على طفلك وأنتِ في عملك أو في بيتك،
+        وأنتِ تشاهدين تقدمه يومًا بعد يوم في القرآن واللغة والمهارات.
+      </p>
+      <div class="why-grid">
+        <div class="card">
+          <h3>أمان وبيئة مجهزة</h3>
+          <p>
+            مبنى مستقل واسع في حي السلمانية، فصول رحبة ذات نوافذ كبيرة لإضاءة وتهوية طبيعية، ساحة خارجية كبيرة بنظام رذاذ ضبابي
+            لتلطيف الجو في الصيف، وأرضيات إسفنجية آمنة مع كاميرات مراقبة تغطي المبنى.
+          </p>
+        </div>
+        <div class="card">
+          <h3>تأسيس تعليمي قوي قبل الابتدائي</h3>
+          <p>
+            القاعدة النورانية للغة العربية، قراءة وتهجئة وكتابة حروف وكلمات وجمل بسيطة، وبرنامج منظم للغة الإنجليزية ومبادئ الحساب،
+            مع تحفيظ سور الصف الأول والأذكار، ليصل طفلك للصف الأول بثقة وجاهزية.
+          </p>
+        </div>
+        <div class="card">
+          <h3>حنان حقيقي ومتابعة يومية</h3>
+          <p>
+            كادر نسائي سعودي بخبرة تتجاوز 13 سنة في مجال الطفولة، يتعامل مع طفلك كابن لهم، مع تصوير وتوثيق لحظات يومه وإرسال
+            صور وفيديوهات لك بشكل دوري عبر الواتساب لتطمئني على سعادته وتقدمه.
+          </p>
+        </div>
+        <div class="card">
+          <h3>باقات مرنة تناسب وقتك</h3>
+          <p>
+            خيارات اشتراك شهرية وأسبوعية ويومية مرنة، مع إمكانية اشتراك وجبات من المقصف أو إرسال لانش بوكس صحي من البيت،
+            لتختاري ما يناسب وقت دوامك وميزانيتك.
+          </p>
+        </div>
+      </div>
+      <div style="margin-top:1.4rem;">
+        <a href="#visit-form"><button class="btn-primary">أريد معرفة الباقات المتاحة لعمر طفلي</button></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt">
+    <div class="container">
+      <h2>برامجنا لطفلك من المواليد حتى 6 سنوات</h2>
+      <p class="sec-intro">
+        صممنا برامج داري الحنونة لتناسب كل مرحلة عمرية، من رعاية المواليد وحتى التمهيدي، مع دمج اللعب بالتعلم والقيم.
+      </p>
+      <div class="programs-grid">
+        <div class="card">
+          <span class="pill">من 45 يومًا حتى 3 سنوات</span>
+          <h3>برنامج الحضانة</h3>
+          <p>
+            رعاية آمنة في بيئة دافئة، مع أنشطة حسية وحركية تناسب عمر الطفل، روتين نوم وغذاء منظم،
+            وتوثيق لحظات طفلك الجميلة وإرسالها لك لتشاركيه يومه حتى وإن كنتِ في العمل.
+          </p>
+        </div>
+        <div class="card">
+          <span class="pill">من 3 إلى 6 سنوات</span>
+          <h3>برنامج الروضة والتمهيدي</h3>
+          <p>
+            تأسيس قوي بالقاعدة النورانية، حروف وكلمات وجمل وقصص بسيطة، برنامج إنجليزي ممتع، مبادئ الحساب (العد، الجمع، الطرح)،
+            وأنشطة وحدات تعليمية وفنية وجماعية لتنمية مهارات طفلك اللغوية والاجتماعية.
+          </p>
+        </div>
+        <div class="card">
+          <span class="pill">القيم والهوية</span>
+          <h3>برنامج القرآن والقيم</h3>
+          <p>
+            تحفيظ سور الصف الأول الابتدائي بالتجويد المبسط، أذكار وأدعية يومية، وقيم إسلامية تطبق في الحياة اليومية داخل الروضة
+            بأسلوب قصصي وتفاعلي يحببه الأطفال.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2>بيئة طفلك في داري الحنونة</h2>
+      <p class="sec-intro">
+        شاهدي بعض الأمثلة لما ستكون عليه بيئة طفلك معنا، ويمكنك استبدال هذه المربعات بصور حقيقية من المركز لاحقًا.
+      </p>
+      <div class="gallery-grid">
+        <div class="gallery-item">صورة الساحة الخارجية مع نظام الرذاذ الضبابي</div>
+        <div class="gallery-item">صورة فصل واسع بإضاءة طبيعية وأرضيات إسفنجية</div>
+        <div class="gallery-item">صورة منطقة الثيل الأخضر والأنشطة الخارجية</div>
+        <div class="gallery-item">صورة ركن القراءة والقصص</div>
+        <div class="gallery-item">صورة اللوكرات بأسماء وصور الأطفال</div>
+        <div class="gallery-item">صورة من إحدى الحفلات التحفيزية أو التخرج</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt">
+    <div class="container">
+      <h2>ماذا تقول الأمهات عن داري الحنونة؟</h2>
+      <p class="sec-intro">بعض الشهادات التي تعكس تجربة الأمهات مع الحضانة والروضة في داري الحنونة.</p>
+      <div class="testimonials">
+        <div class="testimonial">
+          "من يوم دخلت بنتي داري الحنونة وأنا مرتاحة نفسيًا. كل يوم يرسلون لي صور وفيديوهات من حصصها، وبعد 6 أشهر بدأت تقرأ كلمات بسيطة
+          وتحفظ سور من القرآن. فعلاً حسيت إنهم يهتمون فيها كأنها بنتهم."
+          <strong>– أم نورة (أم عاملة)</strong>
+        </div>
+        <div class="testimonial">
+          "كنت أبحث عن مكان يجمع بين الحنان والتأسيس. ابني الآن يكتب اسمه ويعد حتى 20 باللغة العربية والإنجليزية،
+          والأهم أنه يحب الذهاب للروضة كل صباح." 
+          <strong>– أم عبدالله (ربة منزل)</strong>
+        </div>
+      </div>
+      <div style="margin-top:1.2rem;">
+        <a href="https://www.instagram.com/dari_alhanonah/" target="_blank" rel="noopener"><button class="btn-secondary">شاهدي المزيد من تجارب الأمهات على إنستغرام</button></a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2>أسئلة الأمهات المتكررة</h2>
+      <div class="faq-item">
+        <div class="faq-q">ما الأعمار التي تستقبلونها؟</div>
+        <div class="faq-a">نستقبل الأطفال من عمر 45 يومًا حتى 6 سنوات، مع برامج تناسب كل مرحلة عمرية من الحضانة إلى التمهيدي.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">ما أوقات الدوام؟</div>
+        <div class="faq-a">تُحدّد حسب نظام المركز (يمكنك تعديل هذا النص لاحقًا)، مثلًا: من الساعة 7:00 صباحًا حتى 2:30 ظهرًا، مع خيارات تمديد لبعض الباقات.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">هل يمكنني زيارة طفلي خلال اليوم؟</div>
+        <div class="faq-a">نرحب بزيارات الأمهات في أوقات محددة بالتنسيق مع الإدارة، حفاظًا على راحة الأطفال ونظام اليوم.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">كيف أطمئن على سلامة طفلي؟</div>
+        <div class="faq-a">المبنى مزود بكاميرات مراقبة، وساحة خارجية بأرضيات إسفنجية ونظام رذاذ لتلطيف الجو، مع إشراف مستمر من الإدارة والمعلمات على الأطفال واللعب.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">هل يوجد برنامج قرآني وتعليمي واضح؟</div>
+        <div class="faq-a">نعم، لدينا برنامج تحفيظ سور الصف الأول بالتجويد المبسط، مع القاعدة النورانية للعربية، وبرنامج مبسط للإنجليزي والحساب.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section" id="visit-form">
+    <div class="container form-wrap">
+      <div>
+        <h2>احجزي زيارة أو مقعد لطفلك الآن</h2>
+        <p class="sec-intro" style="color:#cbd5f5;">
+          عبّئي البيانات التالية، وسيتواصل معك فريق داري الحنونة خلال يوم عمل واحد لشرح البرامج والأسعار وتحديد أنسب خيار لعمر طفلك.
+        </p>
+      </div>
+      <div>
+        <form class="form-main">
+          <label for="mother-name-2">اسم الأم</label>
+          <input id="mother-name-2" type="text" placeholder="اكتبي اسمك الثلاثي" />
+
+          <label for="child-name">اسم الطفل (اختياري)</label>
+          <input id="child-name" type="text" placeholder="اسم طفلك" />
+
+          <label for="child-age-2">عمر الطفل</label>
+          <select id="child-age-2">
+            <option>اختاري العمر</option>
+            <option>أقل من سنة</option>
+            <option>1–2 سنة</option>
+            <option>3–4 سنوات</option>
+            <option>5–6 سنوات</option>
+          </select>
+
+          <label for="service-2">ما الخدمة التي تبحثين عنها؟</label>
+          <select id="service-2">
+            <option>حضانة مواليد/صغار</option>
+            <option>حضانة تعليمية (من سنة)</option>
+            <option>روضة / تمهيدي</option>
+          </select>
+
+          <label for="contact-time">أفضل وقت للتواصل معك</label>
+          <select id="contact-time">
+            <option>صباحًا</option>
+            <option>ظهرًا</option>
+            <option>مساءً</option>
+          </select>
+
+          <label for="contact-way">طريقة التواصل المفضلة</label>
+          <select id="contact-way">
+            <option>اتصال هاتفي</option>
+            <option>واتساب</option>
+          </select>
+
+          <label for="message">رسالتك لنا</label>
+          <textarea id="message" placeholder="اكتبي أي تفاصيل عن طفلك أو استفسارات حول البرامج أو الأوقات"></textarea>
+
+          <div class="checkbox-row">
+            <input id="agree" type="checkbox" />
+            <label for="agree">أوافق على التواصل معي لإرسال العروض والمعلومات الخاصة بالمركز.</label>
+          </div>
+
+          <button type="submit" class="btn-primary" style="width:100%;">إرسال الطلب الآن</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <div><strong>مركز داري الحنونة الأهلية لضيافة الأطفال – روضة وحضانة نموذجية</strong></div>
+        <div style="margin-top:0.4rem;">الموقع: الأحساء – الهفوف – حي السلمانية الشمالية (يمكن إضافة رابط خرائط جوجل هنا).</div>
+        <div>أوقات العمل: من … إلى … (عدّل حسب أوقاتكم الفعلية).</div>
+      </div>
+      <div>
+        <div>تواصلي معنا:</div>
+        <div class="footer-actions">
+          <a href="https://wa.me/966546425459" target="_blank" rel="noopener">واتساب</a>
+          <a href="tel:+966546425459">اتصال هاتفي</a>
+          <a href="https://www.instagram.com/dari_alhanonah/" target="_blank" rel="noopener">إنستغرام</a>
+          <a href="https://www.tiktok.com/@dari_alhanonah" target="_blank" rel="noopener">تيك توك</a>
+          <a href="https://www.youtube.com/@n0i0a0m0o" target="_blank" rel="noopener">يوتيوب</a>
+        </div>
+      </div>
+    </div>
+    <div class="container" style="margin-top:0.8rem;">
+      جميع الحقوق محفوظة © داري الحنونة – الهفوف، حي السلمانية.
+    </div>
+  </footer>
+</body>
+</html>

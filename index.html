@@ -1,377 +1,1780 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>مركز داري الحنونة الأهلية لضيافة الأطفال</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>داري الحنونة | حضانة وروضة معتمدة في الأحساء</title>
+  <meta name="description" content="حضانة وروضة معتمدة في الأحساء - الهفوف - حي السلمانية. نستقبل أطفالكم من عمر 45 يومًا حتى 6 سنوات. برامج تعليمية متكاملة.">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="داري الحنونة | حضانة وروضة معتمدة">
+  <meta property="og:description" content="حضانة وروضة معتمدة في الأحساء - نستقبل أطفالكم من عمر 45 يومًا حتى 6 سنوات">
+  <meta property="og:type" content="website">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  
   <style>
-    body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#f8fafc; color:#0f172a; }
-    * { box-sizing: border-box; }
-    a { text-decoration: none; }
-    .container { width:100%; max-width:1100px; margin:0 auto; padding:0 1.25rem; }
-    .topbar { background:#0f766e; color:#ecfeff; font-size:0.9rem; }
-    .topbar-inner { display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0; gap:0.75rem; }
-    .topbar a { color:#ecfeff; font-weight:600; padding:0.35rem 0.8rem; border-radius:999px; border:1px solid rgba(240,253,250,0.7); }
+    :root {
+      --primary: #0f766e;
+      --primary-light: #14b8a6;
+      --primary-dark: #0d5c56;
+      --accent: #f97316;
+      --accent-light: #fb923c;
+      --background: #fafaf9;
+      --surface: #ffffff;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --text-muted: #a8a29e;
+      --border: #e7e5e4;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      --radius-sm: 0.375rem;
+      --radius: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+      --radius-2xl: 1.5rem;
+      --radius-full: 9999px;
+    }
 
-    header.hero { background:linear-gradient(135deg,#0f766e,#14b8a6); color:white; padding:2.5rem 0 2.75rem; }
-    .hero-grid { display:grid; grid-template-columns:1.2fr 1fr; gap:2rem; align-items:center; }
-    @media (max-width: 850px) { .hero-grid { grid-template-columns:1fr; } }
-    .hero-title { font-size:2.2rem; margin:0 0 1rem; line-height:1.4; }
-    .hero-sub { font-size:1rem; line-height:1.8; margin-bottom:1.2rem; }
-    .hero-badges { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.4rem; }
-    .badge { background:rgba(15,23,42,0.18); padding:0.25rem 0.65rem; border-radius:999px; font-size:0.82rem; }
-    .hero-actions { display:flex; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; }
-    .btn-primary { background:#f97316; color:#fff; padding:0.7rem 1.3rem; border-radius:999px; font-weight:600; border:none; cursor:pointer; font-size:0.95rem; }
-    .btn-secondary { background:transparent; color:#ecfeff; padding:0.65rem 1.1rem; border-radius:999px; border:1px solid rgba(240,253,250,0.7); font-weight:500; cursor:pointer; font-size:0.9rem; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    .lead-box { background:#ecfeff; color:#0f172a; padding:1rem 1rem 1.2rem; border-radius:0.9rem; box-shadow:0 18px 40px rgba(15,23,42,0.32); }
-    .lead-box h3 { margin-top:0; margin-bottom:0.8rem; font-size:1.05rem; }
-    .lead-form { display:flex; flex-direction:column; gap:0.55rem; }
-    .lead-form label { font-size:0.8rem; font-weight:600; color:#0f172a; }
-    .lead-form input, .lead-form select, .lead-form textarea { width:100%; border-radius:0.55rem; border:1px solid #cbd5e1; padding:0.5rem 0.6rem; font-family:inherit; font-size:0.9rem; }
-    .lead-form textarea { min-height:60px; resize:vertical; }
-    .hint { font-size:0.75rem; color:#6b7280; }
+    html {
+      scroll-behavior: smooth;
+    }
 
-    section { padding:2.5rem 0; }
-    section.alt { background:#e2f3f5; }
-    section h2 { font-size:1.6rem; margin:0 0 0.8rem; }
-    section p.sec-intro { font-size:0.97rem; color:#4b5563; max-width:720px; margin:0 0 1.4rem; }
+    body {
+      font-family: 'Noto Sans Arabic', 'Tajawal', sans-serif;
+      background-color: var(--background);
+      color: var(--text-primary);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
 
-    .why-grid { display:grid; gap:1.1rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
-    @media (max-width:800px) { .why-grid { grid-template-columns:1fr; } }
-    .card { background:#ffffff; border-radius:0.9rem; padding:1rem 1rem 1.1rem; box-shadow:0 4px 16px rgba(15,23,42,0.06); border:1px solid #e5e7eb; }
-    .card h3 { margin:0 0 0.4rem; font-size:1rem; }
-    .card p { margin:0; font-size:0.9rem; color:#4b5563; line-height:1.7; }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Tajawal', sans-serif;
+      font-weight: 700;
+      line-height: 1.3;
+    }
 
-    .programs-grid { display:grid; gap:1rem; grid-template-columns:repeat(3,minmax(0,1fr)); }
-    @media (max-width:900px) { .programs-grid { grid-template-columns:1fr; } }
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
 
-    .pill { display:inline-block; padding:0.25rem 0.55rem; border-radius:999px; font-size:0.78rem; background:#e0f2fe; color:#0369a1; margin-bottom:0.35rem; }
+    @media (min-width: 640px) {
+      .container {
+        padding: 0 1.5rem;
+      }
+    }
 
-    .gallery-grid { display:grid; gap:0.8rem; grid-template-columns:repeat(3,minmax(0,1fr)); }
-    @media (max-width:850px) { .gallery-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-    @media (max-width:600px) { .gallery-grid { grid-template-columns:1fr; } }
-    .gallery-item { background:#e5e7eb; border-radius:0.8rem; height:150px; display:flex; align-items:center; justify-content:center; color:#6b7280; font-size:0.85rem; padding:0.5rem; text-align:center; }
+    @media (min-width: 1024px) {
+      .container {
+        padding: 0 2rem;
+      }
+    }
 
-    .testimonials { display:grid; gap:1rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
-    @media (max-width:800px) { .testimonials { grid-template-columns:1fr; } }
-    .testimonial { background:#ffffff; border-radius:0.9rem; padding:1rem 1rem 1rem; border:1px solid #e5e7eb; box-shadow:0 4px 16px rgba(15,23,42,0.04); font-size:0.9rem; line-height:1.8; }
-    .testimonial strong { display:block; margin-top:0.4rem; font-size:0.86rem; color:#0f172a; }
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      text-decoration: none;
+    }
 
-    .faq-item { margin-bottom:0.7rem; }
-    .faq-q { font-weight:600; font-size:0.9rem; margin-bottom:0.15rem; }
-    .faq-a { font-size:0.88rem; color:#4b5563; line-height:1.7; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      color: white;
+      box-shadow: var(--shadow-lg);
+    }
 
-    .form-section { background:#0f172a; color:#e5e7eb; }
-    .form-wrap { display:grid; grid-template-columns:1.1fr 1fr; gap:2rem; align-items:flex-start; }
-    @media (max-width:900px) { .form-wrap { grid-template-columns:1fr; } }
-    .form-main label { font-size:0.8rem; font-weight:600; }
-    .form-main input, .form-main select, .form-main textarea { width:100%; border-radius:0.45rem; border:1px solid #4b5563; background:#020617; color:#e5e7eb; padding:0.5rem 0.6rem; font-family:inherit; font-size:0.9rem; margin-bottom:0.6rem; }
-    .form-main textarea { min-height:80px; resize:vertical; }
-    .checkbox-row { display:flex; align-items:flex-start; gap:0.4rem; font-size:0.78rem; margin-bottom:0.7rem; }
-    .checkbox-row input { margin-top:0.15rem; }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-xl);
+    }
 
-    footer { background:#020617; color:#9ca3af; padding:1.2rem 0 1.5rem; font-size:0.8rem; }
-    .footer-grid { display:grid; grid-template-columns:2fr 1fr; gap:1rem; align-items:flex-start; }
-    @media (max-width:800px) { .footer-grid { grid-template-columns:1fr; } }
-    .footer-actions { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.4rem; }
-    .footer-actions a { border-radius:999px; border:1px solid #4b5563; padding:0.35rem 0.7rem; color:#e5e7eb; font-size:0.78rem; }
+    .btn-secondary {
+      background: white;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-whatsapp {
+      background: #25d366;
+      color: white;
+    }
+
+    .btn-whatsapp:hover {
+      background: #128c7e;
+    }
+
+    /* Navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: none;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    @media (min-width: 1024px) {
+      .nav-links {
+        display: flex;
+      }
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .mobile-menu-btn {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    @media (min-width: 1024px) {
+      .mobile-menu-btn {
+        display: none;
+      }
+    }
+
+    .mobile-menu-btn span {
+      width: 25px;
+      height: 3px;
+      background: var(--primary);
+      border-radius: 3px;
+      transition: all 0.3s ease;
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+      padding-top: 70px;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></svg>') center/50px;
+      opacity: 0.5;
+    }
+
+    .hero .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    @media (min-width: 1024px) {
+      .hero-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .hero-content {
+      color: white;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #4ade80;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .hero-title {
+        font-size: 3rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .hero-title {
+        font-size: 3.5rem;
+      }
+    }
+
+    .hero-title span {
+      color: #fde047;
+    }
+
+    .hero-description {
+      font-size: 1.125rem;
+      line-height: 1.8;
+      opacity: 0.95;
+      margin-bottom: 2rem;
+      max-width: 90%;
+    }
+
+    .hero-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-feature {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .hero-actions .btn {
+      padding: 1rem 2rem;
+      font-size: 1.125rem;
+    }
+
+    .hero-image-wrapper {
+      position: relative;
+      display: none;
+    }
+
+    @media (min-width: 1024px) {
+      .hero-image-wrapper {
+        display: block;
+      }
+    }
+
+    .hero-image-main {
+      position: relative;
+      z-index: 1;
+      border-radius: var(--radius-2xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-2xl);
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    }
+
+    .hero-image-main img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hero-image-accent {
+      position: absolute;
+      bottom: -20px;
+      left: -20px;
+      width: 200px;
+      height: 200px;
+      border-radius: var(--radius-2xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-xl);
+      border: 4px solid white;
+      z-index: 2;
+      background: var(--accent);
+    }
+
+    .hero-image-accent img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .stats-bar {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      left: 30px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-around;
+      box-shadow: var(--shadow-lg);
+      z-index: 3;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+
+    /* Section Styles */
+    .section {
+      padding: 6rem 0;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 4rem;
+    }
+
+    .section-subtitle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .section-description {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border-radius: var(--radius-2xl);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .feature-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      color: white;
+    }
+
+    .feature-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .feature-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .feature-description {
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* Programs Section */
+    .programs-section {
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+    }
+
+    .programs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+
+    .program-card {
+      background: var(--surface);
+      border-radius: var(--radius-2xl);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .program-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .program-image {
+      height: 220px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    .program-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%);
+    }
+
+    .program-age {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 700;
+      z-index: 1;
+    }
+
+    .program-content {
+      padding: 2rem;
+    }
+
+    .program-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .program-description {
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .program-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .program-features li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .program-features li::before {
+      content: '✓';
+      color: var(--primary);
+      font-weight: 700;
+      width: 20px;
+      height: 20px;
+      background: rgba(15, 118, 110, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+
+    /* Gallery Section */
+    .gallery-section {
+      background: var(--background);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .gallery-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .gallery-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.1);
+    }
+
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: flex-end;
+      padding: 1rem;
+    }
+
+    .gallery-item:hover .gallery-overlay {
+      opacity: 1;
+    }
+
+    .gallery-caption {
+      color: white;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    /* Testimonials Section */
+    .testimonials-section {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+
+    .testimonial-card {
+      background: var(--surface);
+      border-radius: var(--radius-2xl);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .testimonial-card::before {
+      content: '"';
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      font-size: 4rem;
+      color: var(--primary);
+      opacity: 0.2;
+      font-family: serif;
+    }
+
+    .testimonial-text {
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .testimonial-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    .testimonial-info h4 {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .testimonial-info p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    /* FAQ Section */
+    .faq-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .faq-question {
+      width: 100%;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-align: right;
+      font-family: inherit;
+    }
+
+    .faq-question:hover {
+      background: var(--background);
+    }
+
+    .faq-icon {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+      margin-right: 1rem;
+    }
+
+    .faq-item.active .faq-icon {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 500px;
+      padding: 0 1.5rem 1.5rem;
+    }
+
+    .faq-answer p {
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    /* Contact Section */
+    .contact-section {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-section::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: rotate 30s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (min-width: 1024px) {
+      .contact-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .contact-content {
+      color: white;
+    }
+
+    .contact-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    .contact-description {
+      font-size: 1.125rem;
+      opacity: 0.9;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    .contact-features {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .contact-feature {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius-xl);
+    }
+
+    .contact-feature-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--accent);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .contact-form-wrapper {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: var(--radius-2xl);
+      padding: 2.5rem;
+      box-shadow: var(--shadow-2xl);
+    }
+
+    .form-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-subtitle {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      font-size: 0.875rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      background: var(--background);
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+    }
+
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .form-submit {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.125rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Footer */
+    .footer {
+      background: var(--text-primary);
+      color: white;
+      padding: 4rem 0 2rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-brand {
+      max-width: 300px;
+    }
+
+    .footer-logo {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .footer-logo span {
+      color: var(--accent);
+    }
+
+    .footer-description {
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .social-link {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      transition: all 0.3s ease;
+    }
+
+    .social-link:hover {
+      background: var(--accent);
+      transform: translateY(-3px);
+    }
+
+    .footer-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+      padding-right: 0.5rem;
+    }
+
+    .footer-contact p {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 1rem;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 2rem;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.875rem;
+    }
+
+    /* WhatsApp Float Button */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 60px;
+      height: 60px;
+      background: #25d366;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+      z-index: 999;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .whatsapp-float:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 30px rgba(37, 211, 102, 0.5);
+    }
+
+    .whatsapp-float svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    /* Mobile Menu */
+    .mobile-menu {
+      position: fixed;
+      top: 70px;
+      right: -100%;
+      width: 100%;
+      height: calc(100vh - 70px);
+      background: var(--surface);
+      z-index: 999;
+      transition: right 0.3s ease;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .mobile-menu.active {
+      right: 0;
+    }
+
+    .mobile-menu a {
+      display: block;
+      padding: 1rem 0;
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.125rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mobile-menu a:hover {
+      color: var(--primary);
+    }
+
+    .mobile-menu .btn {
+      margin-top: 1.5rem;
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      .section-title {
+        font-size: 1.75rem;
+      }
+      
+      .stats-bar {
+        display: none;
+      }
+      
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .programs-grid,
+      .features-grid,
+      .testimonials-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+      }
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .btn.loading .spinner {
+      display: inline-block;
+    }
+
+    .btn.loading .btn-text {
+      display: none;
+    }
+
+    /* Success Message */
+    .success-message {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      color: #166534;
+      padding: 1rem;
+      border-radius: var(--radius-lg);
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .success-message.show {
+      display: block;
+      animation: fadeInUp 0.3s ease;
+    }
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <div class="container topbar-inner">
-      <div>حضانة وروضة معتمدة في الأحساء – الهفوف – حي السلمانية، نستقبل أطفالكم من عمر 45 يومًا حتى 6 سنوات.</div>
-      <a href="#lead-form">احجزي استشارة مجانية</a>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="#" class="logo">
+        <span>داري</span> الحنونة
+      </a>
+      <div class="nav-links">
+        <a href="#about">من نحن</a>
+        <a href="#programs">البرامج</a>
+        <a href="#gallery">معرض الصور</a>
+        <a href="#testimonials">آراء الأمهات</a>
+        <a href="#contact" class="btn btn-primary">احجزي زيارة</a>
+      </div>
+      <button class="mobile-menu-btn" aria-label="القائمة" onclick="toggleMobileMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#about" onclick="closeMobileMenu()">من نحن</a>
+    <a href="#programs" onclick="closeMobileMenu()">البرامج</a>
+    <a href="#gallery" onclick="closeMobileMenu()">معرض الصور</a>
+    <a href="#testimonials" onclick="closeMobileMenu()">آراء الأمهات</a>
+    <a href="#contact" class="btn btn-primary" onclick="closeMobileMenu()">احجزي زيارة</a>
   </div>
 
-  <header class="hero">
-    <div class="container hero-grid">
-      <div>
-        <h1 class="hero-title">داري الحنونة… بيت طفلك الثاني في السلمانية</h1>
-        <p class="hero-sub">
-          مركز داري الحنونة الأهلية لضيافة الأطفال – روضة وحضانة نموذجية بمبنى مستقل واسع وساحة خارجية مكيفة بالرش الضبابي،
-          وبرنامج تأسيسي قوي في القرآن واللغة العربية بالقاعدة النورانية واللغة الإنجليزية والحساب، تحت إشراف كادر نسائي سعودي خبير.
-        </p>
-        <div class="hero-badges">
-          <span class="badge">من عمر 45 يومًا حتى 6 سنوات</span>
-          <span class="badge">برنامج قرآني وتعليمي متكامل</span>
-          <span class="badge">متابعة يومية للأم بالصور والفيديو</span>
-          <span class="badge">باقات شهرية وأسبوعية ويومية مرنة</span>
-        </div>
-        <div class="hero-actions">
-          <a href="#visit-form"><button class="btn-primary">احجزي زيارة للمركز الآن</button></a>
-          <a href="https://wa.me/966546425459" target="_blank" rel="noopener"><button class="btn-secondary">راسلينا على واتساب</button></a>
-        </div>
-        <p class="hint">املئي النموذج أو أرسلي لنا على الواتساب، وسيتواصل معك فريق داري الحنونة خلال أقرب وقت.</p>
-      </div>
-      <div>
-        <div class="lead-box" id="lead-form">
-          <h3>استشارة مجانية لاختيار أنسب برنامج لطفلك</h3>
-          <form class="lead-form">
-            <div>
-              <label for="mother-name">اسم الأم</label>
-              <input id="mother-name" type="text" placeholder="اكتبي اسمك" />
-            </div>
-            <div>
-              <label for="phone">رقم الجوال</label>
-              <input id="phone" type="tel" placeholder="05xxxxxxxx" />
-            </div>
-            <div>
-              <label for="child-age">عمر الطفل</label>
-              <select id="child-age">
-                <option>اختاري العمر</option>
-                <option>أقل من سنة</option>
-                <option>1–2 سنة</option>
-                <option>3–4 سنوات</option>
-                <option>5–6 سنوات</option>
-              </select>
-            </div>
-            <div>
-              <label for="service">ما الخدمة التي تبحثين عنها؟</label>
-              <select id="service">
-                <option>اختاري نوع الخدمة</option>
-                <option>حضانة مواليد/صغار</option>
-                <option>حضانة تعليمية (من سنة)</option>
-                <option>روضة / تمهيدي</option>
-              </select>
-            </div>
-            <div>
-              <label for="note">رسالة أو استفسار (اختياري)</label>
-              <textarea id="note" placeholder="اكتبي أي ملاحظة أو استفسار عن طفلك"></textarea>
-            </div>
-            <button type="submit" class="btn-primary" style="width:100%; margin-top:0.3rem;">إرسال طلبي الآن</button>
-            <p class="hint">بالضغط على إرسال، أنتِ توافقين على تواصل المركز معك عبر الجوال أو الواتساب لتزويدك بالمعلومات والعروض.</p>
-          </form>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <section>
+  <!-- Hero Section -->
+  <section class="hero" id="home">
     <div class="container">
-      <h2>لماذا داري الحنونة هي بيت طفلك الثاني؟</h2>
-      <p class="sec-intro">
-        في داري الحنونة نجمع بين الأمان والحنان والتأسيس التعليمي القوي، لتطمئني على طفلك وأنتِ في عملك أو في بيتك،
-        وأنتِ تشاهدين تقدمه يومًا بعد يوم في القرآن واللغة والمهارات.
-      </p>
-      <div class="why-grid">
-        <div class="card">
-          <h3>أمان وبيئة مجهزة</h3>
-          <p>
-            مبنى مستقل واسع في حي السلمانية، فصول رحبة ذات نوافذ كبيرة لإضاءة وتهوية طبيعية، ساحة خارجية كبيرة بنظام رذاذ ضبابي
-            لتلطيف الجو في الصيف، وأرضيات إسفنجية آمنة مع كاميرات مراقبة تغطي المبنى.
-          </p>
-        </div>
-        <div class="card">
-          <h3>تأسيس تعليمي قوي قبل الابتدائي</h3>
-          <p>
-            القاعدة النورانية للغة العربية، قراءة وتهجئة وكتابة حروف وكلمات وجمل بسيطة، وبرنامج منظم للغة الإنجليزية ومبادئ الحساب،
-            مع تحفيظ سور الصف الأول والأذكار، ليصل طفلك للصف الأول بثقة وجاهزية.
-          </p>
-        </div>
-        <div class="card">
-          <h3>حنان حقيقي ومتابعة يومية</h3>
-          <p>
-            كادر نسائي سعودي بخبرة تتجاوز 13 سنة في مجال الطفولة، يتعامل مع طفلك كابن لهم، مع تصوير وتوثيق لحظات يومه وإرسال
-            صور وفيديوهات لك بشكل دوري عبر الواتساب لتطمئني على سعادته وتقدمه.
-          </p>
-        </div>
-        <div class="card">
-          <h3>باقات مرنة تناسب وقتك</h3>
-          <p>
-            خيارات اشتراك شهرية وأسبوعية ويومية مرنة، مع إمكانية اشتراك وجبات من المقصف أو إرسال لانش بوكس صحي من البيت،
-            لتختاري ما يناسب وقت دوامك وميزانيتك.
-          </p>
-        </div>
-      </div>
-      <div style="margin-top:1.4rem;">
-        <a href="#visit-form"><button class="btn-primary">أريد معرفة الباقات المتاحة لعمر طفلي</button></a>
-      </div>
-    </div>
-  </section>
-
-  <section class="alt">
-    <div class="container">
-      <h2>برامجنا لطفلك من المواليد حتى 6 سنوات</h2>
-      <p class="sec-intro">
-        صممنا برامج داري الحنونة لتناسب كل مرحلة عمرية، من رعاية المواليد وحتى التمهيدي، مع دمج اللعب بالتعلم والقيم.
-      </p>
-      <div class="programs-grid">
-        <div class="card">
-          <span class="pill">من 45 يومًا حتى 3 سنوات</span>
-          <h3>برنامج الحضانة</h3>
-          <p>
-            رعاية آمنة في بيئة دافئة، مع أنشطة حسية وحركية تناسب عمر الطفل، روتين نوم وغذاء منظم،
-            وتوثيق لحظات طفلك الجميلة وإرسالها لك لتشاركيه يومه حتى وإن كنتِ في العمل.
-          </p>
-        </div>
-        <div class="card">
-          <span class="pill">من 3 إلى 6 سنوات</span>
-          <h3>برنامج الروضة والتمهيدي</h3>
-          <p>
-            تأسيس قوي بالقاعدة النورانية، حروف وكلمات وجمل وقصص بسيطة، برنامج إنجليزي ممتع، مبادئ الحساب (العد، الجمع، الطرح)،
-            وأنشطة وحدات تعليمية وفنية وجماعية لتنمية مهارات طفلك اللغوية والاجتماعية.
-          </p>
-        </div>
-        <div class="card">
-          <span class="pill">القيم والهوية</span>
-          <h3>برنامج القرآن والقيم</h3>
-          <p>
-            تحفيظ سور الصف الأول الابتدائي بالتجويد المبسط، أذكار وأدعية يومية، وقيم إسلامية تطبق في الحياة اليومية داخل الروضة
-            بأسلوب قصصي وتفاعلي يحببه الأطفال.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="container">
-      <h2>بيئة طفلك في داري الحنونة</h2>
-      <p class="sec-intro">
-        شاهدي بعض الأمثلة لما ستكون عليه بيئة طفلك معنا، ويمكنك استبدال هذه المربعات بصور حقيقية من المركز لاحقًا.
-      </p>
-      <div class="gallery-grid">
-        <div class="gallery-item">صورة الساحة الخارجية مع نظام الرذاذ الضبابي</div>
-        <div class="gallery-item">صورة فصل واسع بإضاءة طبيعية وأرضيات إسفنجية</div>
-        <div class="gallery-item">صورة منطقة الثيل الأخضر والأنشطة الخارجية</div>
-        <div class="gallery-item">صورة ركن القراءة والقصص</div>
-        <div class="gallery-item">صورة اللوكرات بأسماء وصور الأطفال</div>
-        <div class="gallery-item">صورة من إحدى الحفلات التحفيزية أو التخرج</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="alt">
-    <div class="container">
-      <h2>ماذا تقول الأمهات عن داري الحنونة؟</h2>
-      <p class="sec-intro">بعض الشهادات التي تعكس تجربة الأمهات مع الحضانة والروضة في داري الحنونة.</p>
-      <div class="testimonials">
-        <div class="testimonial">
-          "من يوم دخلت بنتي داري الحنونة وأنا مرتاحة نفسيًا. كل يوم يرسلون لي صور وفيديوهات من حصصها، وبعد 6 أشهر بدأت تقرأ كلمات بسيطة
-          وتحفظ سور من القرآن. فعلاً حسيت إنهم يهتمون فيها كأنها بنتهم."
-          <strong>– أم نورة (أم عاملة)</strong>
-        </div>
-        <div class="testimonial">
-          "كنت أبحث عن مكان يجمع بين الحنان والتأسيس. ابني الآن يكتب اسمه ويعد حتى 20 باللغة العربية والإنجليزية،
-          والأهم أنه يحب الذهاب للروضة كل صباح." 
-          <strong>– أم عبدالله (ربة منزل)</strong>
-        </div>
-      </div>
-      <div style="margin-top:1.2rem;">
-        <a href="https://www.instagram.com/dari_alhanonah/" target="_blank" rel="noopener"><button class="btn-secondary">شاهدي المزيد من تجارب الأمهات على إنستغرام</button></a>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="container">
-      <h2>أسئلة الأمهات المتكررة</h2>
-      <div class="faq-item">
-        <div class="faq-q">ما الأعمار التي تستقبلونها؟</div>
-        <div class="faq-a">نستقبل الأطفال من عمر 45 يومًا حتى 6 سنوات، مع برامج تناسب كل مرحلة عمرية من الحضانة إلى التمهيدي.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">ما أوقات الدوام؟</div>
-        <div class="faq-a">تُحدّد حسب نظام المركز (يمكنك تعديل هذا النص لاحقًا)، مثلًا: من الساعة 7:00 صباحًا حتى 2:30 ظهرًا، مع خيارات تمديد لبعض الباقات.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">هل يمكنني زيارة طفلي خلال اليوم؟</div>
-        <div class="faq-a">نرحب بزيارات الأمهات في أوقات محددة بالتنسيق مع الإدارة، حفاظًا على راحة الأطفال ونظام اليوم.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">كيف أطمئن على سلامة طفلي؟</div>
-        <div class="faq-a">المبنى مزود بكاميرات مراقبة، وساحة خارجية بأرضيات إسفنجية ونظام رذاذ لتلطيف الجو، مع إشراف مستمر من الإدارة والمعلمات على الأطفال واللعب.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">هل يوجد برنامج قرآني وتعليمي واضح؟</div>
-        <div class="faq-a">نعم، لدينا برنامج تحفيظ سور الصف الأول بالتجويد المبسط، مع القاعدة النورانية للعربية، وبرنامج مبسط للإنجليزي والحساب.</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="form-section" id="visit-form">
-    <div class="container form-wrap">
-      <div>
-        <h2>احجزي زيارة أو مقعد لطفلك الآن</h2>
-        <p class="sec-intro" style="color:#cbd5f5;">
-          عبّئي البيانات التالية، وسيتواصل معك فريق داري الحنونة خلال يوم عمل واحد لشرح البرامج والأسعار وتحديد أنسب خيار لعمر طفلك.
-        </p>
-      </div>
-      <div>
-        <form class="form-main">
-          <label for="mother-name-2">اسم الأم</label>
-          <input id="mother-name-2" type="text" placeholder="اكتبي اسمك الثلاثي" />
-
-          <label for="child-name">اسم الطفل (اختياري)</label>
-          <input id="child-name" type="text" placeholder="اسم طفلك" />
-
-          <label for="child-age-2">عمر الطفل</label>
-          <select id="child-age-2">
-            <option>اختاري العمر</option>
-            <option>أقل من سنة</option>
-            <option>1–2 سنة</option>
-            <option>3–4 سنوات</option>
-            <option>5–6 سنوات</option>
-          </select>
-
-          <label for="service-2">ما الخدمة التي تبحثين عنها؟</label>
-          <select id="service-2">
-            <option>حضانة مواليد/صغار</option>
-            <option>حضانة تعليمية (من سنة)</option>
-            <option>روضة / تمهيدي</option>
-          </select>
-
-          <label for="contact-time">أفضل وقت للتواصل معك</label>
-          <select id="contact-time">
-            <option>صباحًا</option>
-            <option>ظهرًا</option>
-            <option>مساءً</option>
-          </select>
-
-          <label for="contact-way">طريقة التواصل المفضلة</label>
-          <select id="contact-way">
-            <option>اتصال هاتفي</option>
-            <option>واتساب</option>
-          </select>
-
-          <label for="message">رسالتك لنا</label>
-          <textarea id="message" placeholder="اكتبي أي تفاصيل عن طفلك أو استفسارات حول البرامج أو الأوقات"></textarea>
-
-          <div class="checkbox-row">
-            <input id="agree" type="checkbox" />
-            <label for="agree">أوافق على التواصل معي لإرسال العروض والمعلومات الخاصة بالمركز.</label>
+      <div class="hero-grid">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span>✓</span>
+            <span>حضانة وروضة معتمدة</span>
           </div>
-
-          <button type="submit" class="btn-primary" style="width:100%;">إرسال الطلب الآن</button>
-        </form>
+          <h1 class="hero-title">
+            <span>بيت طفلك</span> الثاني في السلمانية
+          </h1>
+          <p class="hero-description">
+            مركز داري الحنونة الأهلية لضيافة الأطفال – روضة وحضانة نموذجية بمبنى مستقل واسع وساحة خارجية مكيفة بالرش الضبابي
+          </p>
+          <div class="hero-features">
+            <div class="hero-feature">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <span>من 45 يومًا حتى 6 سنوات</span>
+            </div>
+            <div class="hero-feature">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <span>برنامج قرآني وتعليمي متكامل</span>
+            </div>
+            <div class="hero-feature">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <span>متابعة يومية للأم بالصور والفيديو</span>
+            </div>
+          </div>
+          <div class="hero-actions">
+            <a href="#contact" class="btn btn-primary">احجزي زيارة مجانية</a>
+            <a href="https://wa.me/966546425459" class="btn btn-whatsapp" target="_blank" rel="noopener">
+              تواصلي عبر واتساب
+            </a>
+          </div>
+        </div>
+        <div class="hero-image-wrapper">
+          <div class="hero-image-main">
+            <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?w=800&q=80" alt="داري الحنونة - حضانة الأحساء">
+          </div>
+          <div class="hero-image-accent">
+            <img src="https://images.unsplash.com/photo-1566004100631-35d015d6a491?w=400&q=80" alt="أطفال في الحضانة">
+          </div>
+          <div class="stats-bar">
+            <div class="stat-item">
+              <div class="stat-number">+13</div>
+              <div class="stat-label">سنة خبرة</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">+500</div>
+              <div class="stat-label">طفل سعيد</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">45+</div>
+              <div class="stat-label">يومًا للاستقبال</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <footer>
-    <div class="container footer-grid">
-      <div>
-        <div><strong>مركز داري الحنونة الأهلية لضيافة الأطفال – روضة وحضانة نموذجية</strong></div>
-        <div style="margin-top:0.4rem;">الموقع: الأحساء – الهفوف – حي السلمانية الشمالية (يمكن إضافة رابط خرائط جوجل هنا).</div>
-        <div>أوقات العمل: من … إلى … (عدّل حسب أوقاتكم الفعلية).</div>
+  <!-- Why Us Section -->
+  <section class="section" id="about">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">✨ لماذا تختارينا</span>
+        <h2 class="section-title">بيت طفلك الثاني</h2>
+        <p class="section-description">
+          في داري الحنونة نجمع بين الأمان والحنان والتأسيس التعليمي القوي، لتطمئني على طفلك وأنتِ في عملك أو في بيتك
+        </p>
       </div>
-      <div>
-        <div>تواصلي معنا:</div>
-        <div class="footer-actions">
-          <a href="https://wa.me/966546425459" target="_blank" rel="noopener">واتساب</a>
-          <a href="tel:+966546425459">اتصال هاتفي</a>
-          <a href="https://www.instagram.com/dari_alhanonah/" target="_blank" rel="noopener">إنستغرام</a>
-          <a href="https://www.tiktok.com/@dari_alhanonah" target="_blank" rel="noopener">تيك توك</a>
-          <a href="https://www.youtube.com/@n0i0a0m0o" target="_blank" rel="noopener">يوتيوب</a>
+      <div class="features-grid">
+        <div class="feature-card animate delay-1">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+          </div>
+          <h3 class="feature-title">أمان وبيئة مجهزة</h3>
+          <p class="feature-description">مبنى مستقل واسع في حي السلمانية، فصول رحبة ذات نوافذ كبيرة لإضاءة وتهوية طبيعية، ساحة خارجية كبيرة بنظام رذاذ ضبابي</p>
+        </div>
+        <div class="feature-card animate delay-2">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+          </div>
+          <h3 class="feature-title">تأسيس تعليمي قوي</h3>
+          <p class="feature-description">القاعدة النورانية للغة العربية، قراءة وتهجئة وكتابة حروف وكلمات وجمل بسيطة، وبرنامج منظم للغة الإنجليزية ومبادئ الحساب</p>
+        </div>
+        <div class="feature-card animate delay-3">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+          </div>
+          <h3 class="feature-title">حنان حقيقي ومتابعة</h3>
+          <p class="feature-description">كادر نسائي سعودي بخبرة تتجاوز 13 سنة في مجال الطفولة، يتعامل مع طفلك كابن لهم، مع تصوير وتوثيق لحظات يومه وإرسال صور وفيديوهات لك بشكل دوري</p>
+        </div>
+        <div class="feature-card animate delay-4">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
+          </div>
+          <h3 class="feature-title">باقات مرنة تناسب وقتك</h3>
+          <p class="feature-description">خيارات اشتراك شهرية وأسبوعية ويومية مرنة، مع إمكانية اشتراك وجبات من المقصف أو إرسال لانش بوكس صحي من البيت، لتختاري ما يناسب وقت دوامك وميزانيتك</p>
         </div>
       </div>
     </div>
-    <div class="container" style="margin-top:0.8rem;">
-      جميع الحقوق محفوظة © داري الحنونة – الهفوف، حي السلمانية.
+  </section>
+
+  <!-- Programs Section -->
+  <section class="section programs-section" id="programs">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">📚 برامجنا</span>
+        <h2 class="section-title">برامج مصممة لكل مرحلة عمرية</h2>
+        <p class="section-description">
+          صممنا برامج داري الحنونة لتناسب كل مرحلة عمرية، من رعاية المواليد وحتى التمهيدي، مع دمج اللعب بالتعلم والقيم
+        </p>
+      </div>
+      <div class="programs-grid">
+        <div class="program-card animate delay-1">
+          <div class="program-image" style="background-image: url('https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80');">
+            <span class="program-age">من 45 يومًا حتى 3 سنوات</span>
+          </div>
+          <div class="program-content">
+            <h3 class="program-title">برنامج الحضانة</h3>
+            <p class="program-description">
+              رعاية آمنة في بيئة دافئة، مع أنشطة حسية وحركية تناسب عمر الطفل، روتين نوم وغذاء منظم، وتوثيق لحظات طفلك الجميلة
+            </p>
+            <ul class="program-features">
+              <li>رعاية فردية لكل طفل</li>
+              <li>أنشطة حسية وحركية</li>
+              <li>روتين نوم وغذاء منظم</li>
+              <li>توثيق يومي بالصور</li>
+            </ul>
+          </div>
+        </div>
+        <div class="program-card animate delay-2">
+          <div class="program-image" style="background-image: url('https://images.unsplash.com/photo-1544776193-352d25ca82cd?w=800&q=80');">
+            <span class="program-age">من 3 إلى 6 سنوات</span>
+          </div>
+          <div class="program-content">
+            <h3 class="program-title">برنامج الروضة والتمهيدي</h3>
+            <p class="program-description">
+              تأسيس قوي بالقاعدة النورانية، حروف وكلمات وجمل وقصص بسيطة، برنامج إنجليزي ممتع، مبادئ الحساب، وأنشطة وحدات تعليمية
+            </p>
+            <ul class="program-features">
+              <li>القاعدة النورانية للعربية</li>
+              <li>برنامج إنجليزي ممتع</li>
+              <li>مبادئ الحساب والرياضيات</li>
+              <li>أنشطة وحدات تعليمية</li>
+            </ul>
+          </div>
+        </div>
+        <div class="program-card animate delay-3">
+          <div class="program-image" style="background-image: url('https://images.unsplash.com/photo-1596495577886-d920f1fb7238?w=800&q=80');">
+            <span class="program-age">القيم والهوية</span>
+          </div>
+          <div class="program-content">
+            <h3 class="program-title">برنامج القرآن والقيم</h3>
+            <p class="program-description">
+              تحفيظ سور الصف الأول الابتدائي بالتجويد المبسط، أذكار وأدعية يومية، وقيم إسلامية تطبق في الحياة اليومية داخل الروضة
+            </p>
+            <ul class="program-features">
+              <li>تحفيظ سور الصف الأول</li>
+              <li>تجويد مبسط للأطفال</li>
+              <li>أذكار وأدعية يومية</li>
+              <li>قيم إسلامية تفاعلية</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section class="section gallery-section" id="gallery">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">📸 معرض الصور</span>
+        <h2 class="section-title">لحظات من يوم طفلك معنا</h2>
+        <p class="section-description">
+          شاهدي بعض اللحظات الجميلة من يوم طفلك في داري الحنونة، من الأنشطة التعليمية إلى اللحظات الترفيهية
+        </p>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item" onclick="openGalleryModal(0)">
+          <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&q=80" alt="أطفال في الحضانة">
+          <div class="gallery-overlay">
+            <span class="gallery-caption">أنشطة ترفيهية</span>
+          </div>
+        </div>
+        <div class="gallery-item" onclick="openGalleryModal(1)">
+          <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&q=80" alt="طفلة سعيدة">
+          <div class="gallery-overlay">
+            <span class="gallery-caption">سعادة الأطفال</span>
+          </div>
+        </div>
+        <div class="gallery-item" onclick="openGalleryModal(2)">
+          <img src="https://images.unsplash.com/photo-1544776193-352d25ca82cd?w=600&q=80" alt="تعلم القراءة">
+          <div class="gallery-overlay">
+            <span class="gallery-caption">تعلم القراءة</span>
+          </div>
+        </div>
+        <div class="gallery-item" onclick="openGalleryModal(3)">
+          <img src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238?w=600&q=80" alt="أنشطة فنية">
+          <div class="gallery-overlay">
+            <span class="gallery-caption">أنشطة فنية</span>
+          </div>
+        </div>
+        <div class="gallery-item" onclick="openGalleryModal(4)">
+          <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?w=600&q=80" alt="لعب الأطفال">
+          <div class="gallery-overlay">
+            <span class="gallery-caption">لعب الأطفال</span>
+          </div>
+        </div>
+        <div class="gallery-item" onclick="openGalleryModal(5)">
+          <img src="https://images.unsplash.com/photo-1566004100631-35d015d6a491?w=600&q=80" alt="تعلم الكتابة">
+          <div class="gallery-overlay">
+            <span class="gallery-caption">تعلم الكتابة</span>
+          </div>
+        </div>
+        <div class="gallery-item" onclick="openGalleryModal(6)">
+          <img src="https://images.unsplash.com/photo-1505377057305-6f60de705370?w=600&q=80" alt="أنشطة رياضية">
+          <div class="gallery-overlay">
+            <span class="gallery-caption">أنشطة رياضية</span>
+          </div>
+        </div>
+        <div class="gallery-item" onclick="openGalleryModal(7)">
+          <img src="https://images.unsplash.com/photo-1602507343582-9c2b7f3b0a1e?w=600&q=80" alt="وقت القصة">
+          <div class="gallery-overlay">
+            <span class="gallery-caption">وقت القصة</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="section testimonials-section" id="testimonials">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">💬 آراء الأمهات</span>
+        <h2 class="section-title">ماذا تقول الأمهات عن داري الحنونة</h2>
+        <p class="section-description">
+          شهادات حقيقية من أمهات اخترن داري الحنونة لرعاية أطفالهن، شاركنا تجربتهن
+        </p>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card animate delay-1">
+          <p class="testimonial-text">
+            "من يوم دخلت بنتي داري الحنونة وأنا مرتاحة نفسيًا. كل يوم يرسلون لي صور وفيديوهات من حصصها، وبعد 6 أشهر بدأت تقرأ كلمات بسيطة وتحفظ سور من القرآن. فعلاً حسيت إنهم يهتمون فيها كأنها بنتهم."
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">ن</div>
+            <div class="testimonial-info">
+              <h4>أم نورة</h4>
+              <p>أم عاملة - طفلتها في الروضة</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card animate delay-2">
+          <p class="testimonial-text">
+            "كنت أبحث عن مكان يجمع بين الحنان والتأسيس. ابني الآن يكتب اسمه ويعد حتى 20 باللغة العربية والإنجليزية، والأهم أنه يحب الذهاب للروضة كل صباح. شكراً داري الحنونة على اهتمامكم!"
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">ع</div>
+            <div class="testimonial-info">
+              <h4>أم عبدالله</h4>
+              <p>ربة منزل - طفلها في التمهيدي</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="section contact-section" id="contact">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-content">
+          <h2 class="contact-title">احجزي زيارة أو مقعد لطفلك الآن</h2>
+          <p class="contact-description">
+            عبّئي البيانات التالية، وسيتواصل معك فريق داري الحنونة خلال يوم عمل واحد لشرح البرامج والأسعار وتحديد أنسب خيار لعمر طفلك
+          </p>
+          <div class="contact-features">
+            <div class="contact-feature">
+              <div class="contact-feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" /></svg>
+              </div>
+              <div>
+                <strong style="color: white; display: block; margin-bottom: 0.25rem;">اتصال مباشر</strong>
+                <span style="color: rgba(255,255,255,0.8);">054 642 5459</span>
+              </div>
+            </div>
+            <div class="contact-feature">
+              <div class="contact-feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              </div>
+              <div>
+                <strong style="color: white; display: block; margin-bottom: 0.25rem;">أوقات العمل</strong>
+                <span style="color: rgba(255,255,255,0.8);">السبت - الخميس: 6:30 ص - 2:30 م</span>
+              </div>
+            </div>
+            <div class="contact-feature">
+              <div class="contact-feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
+              </div>
+              <div>
+                <strong style="color: white; display: block; margin-bottom: 0.25rem;">الموقع</strong>
+                <span style="color: rgba(255,255,255,0.8);">الأحساء - الهفوف - حي السلمانية الشمالية</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="contact-form-wrapper">
+          <h3 class="form-title">استشارة مجانية</h3>
+          <p class="form-subtitle">املأي النموذج وسنتواصل معك في أقرب وقت</p>
+          <form id="contactForm" onsubmit="handleFormSubmit(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="motherName">اسم الأم *</label>
+                <input type="text" id="motherName" class="form-input" placeholder="اكتبي اسمك" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="phone">رقم الجوال *</label>
+                <input type="tel" id="phone" class="form-input" placeholder="05xxxxxxxx" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="childAge">عمر الطفل *</label>
+                <select id="childAge" class="form-select" required>
+                  <option value="">اختيار العمر</option>
+                  <option value="45days-1year">من 45 يومًا حتى سنة</option>
+                  <option value="1-2years">من 1 إلى 2 سنوات</option>
+                  <option value="2-3years">من 2 إلى 3 سنوات</option>
+                  <option value="3-4years">من 3 إلى 4 سنوات</option>
+                  <option value="4-5years">من 4 إلى 5 سنوات</option>
+                  <option value="5-6years">من 5 إلى 6 سنوات</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="programType">نوع البرنامج *</label>
+                <select id="programType" class="form-select" required>
+                  <option value="">اختيار البرنامج</option>
+                  <option value="nursery">برنامج الحضانة</option>
+                  <option value="kindergarten">برنامج الروضة</option>
+                  <option value="quran">برنامج القرآن والقيم</option>
+                  <option value="full">البرنامج المتكامل</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="notes">ملاحظات إضافية</label>
+              <textarea id="notes" class="form-textarea" placeholder="اكتبي أي ملاحظات أو استفسارات خاصة"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary form-submit">
+              <span class="btn-text">إرسال الطلب</span>
+              <span class="spinner"></span>
+            </button>
+          </form>
+          <div class="success-message" id="successMessage">
+            ✅ تم إرسال طلبك بنجاح! سنتواصل معك في أقرب وقت.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="footer-logo">
+            <span>داري</span> الحنونة
+          </a>
+          <p class="footer-description">
+            مركز داري الحنونة الأهلية لضيافة الأطفال – روضة وحضانة نموذجية بمبنى مستقل واسع وساحة خارجية مكيفة
+          </p>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/dari_alhanonah/" target="_blank" rel="noopener" class="social-link" aria-label="إنستغرام">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+            <a href="#" class="social-link" aria-label="تويتر">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a href="https://www.tiktok.com/@dari_alhanonah" target="_blank" rel="noopener" class="social-link" aria-label="تيك توك">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.1-1.8.95-3.51 2.33-4.76 1.5-1.36 3.46-2.13 5.47-2.13 1.03 0 2.05.18 3.02.52V6.22c-1.02-.04-2.02-.08-3.04-.02-1.79.09-3.53.73-4.96 1.84-1.27 1-2.18 2.36-2.59 3.87-.28.96-.37 1.98-.26 2.98.17 1.59.77 3.07 1.72 4.27 1.15 1.44 2.74 2.47 4.5 2.9 1.02.25 2.09.32 3.13.2 1.49-.17 2.91-.71 4.11-1.56 1.19-.84 2.13-1.97 2.71-3.25.47-1.05.74-2.19.78-3.34.03-.85-.02-1.71-.15-2.55-.12-.75-.31-1.48-.57-2.18-.46-1.18-1.11-2.26-1.92-3.19-.98-1.11-2.17-1.99-3.5-2.58-.87-.38-1.8-.63-2.76-.74-.75-.09-1.51-.1-2.26-.03V.02z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-links-column">
+          <h4 class="footer-title">روابط سريعة</h4>
+          <ul class="footer-links">
+            <li><a href="#about">من نحن</a></li>
+            <li><a href="#programs">البرامج</a></li>
+            <li><a href="#gallery">معرض الصور</a></li>
+            <li><a href="#testimonials">آراء الأمهات</a></li>
+            <li><a href="#contact">تواصل معنا</a></li>
+          </ul>
+        </div>
+        <div class="footer-links-column">
+          <h4 class="footer-title">تواصل معنا</h4>
+          <div class="footer-contact">
+            <p>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" /></svg>
+              054 642 5459
+            </p>
+            <p>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>
+              info@darialhanonah.com
+            </p>
+            <p>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
+              الأحساء - الهفوف - حي السلمانية الشمالية
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>جميع الحقوق محفوظة © 2025 داري الحنونة - حضانة وروضة معتمدة في الأحساء</p>
+      </div>
     </div>
   </footer>
+
+  <!-- WhatsApp Float Button -->
+  <a href="https://wa.me/966546425459" class="whatsapp-float" target="_blank" rel="noopener" aria-label="تواصل عبر واتساب">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.249-.46-2.38-1.472-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.887c0 2.096.547 4.134 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.723 1.465h.005c6.552 0 11.887-5.335 11.89-11.887a11.821 11.821 0 00-3.567-8.411"/></svg>
+  </a>
+
+  <script>
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+      const mobileMenu = document.getElementById('mobileMenu');
+      mobileMenu.classList.toggle('active');
+    }
+
+    function closeMobileMenu() {
+      const mobileMenu = document.getElementById('mobileMenu');
+      mobileMenu.classList.remove('active');
+    }
+
+    // FAQ Accordion
+    document.querySelectorAll('.faq-question').forEach(button => {
+      button.addEventListener('click', () => {
+        const faqItem = button.parentElement;
+        const isActive = faqItem.classList.contains('active');
+        
+        // Close all FAQ items
+        document.querySelectorAll('.faq-item').forEach(item => {
+          item.classList.remove('active');
+        });
+        
+        // Open clicked item if it wasn't active
+        if (!isActive) {
+          faqItem.classList.add('active');
+        }
+      });
+    });
+
+    // Form Submission
+    function handleFormSubmit(event) {
+      event.preventDefault();
+      
+      const form = event.target;
+      const submitBtn = form.querySelector('.form-submit');
+      const successMessage = document.getElementById('successMessage');
+      
+      // Show loading state
+      submitBtn.classList.add('loading');
+      
+      // Simulate form submission (replace with actual API call)
+      setTimeout(() => {
+        submitBtn.classList.remove('loading');
+        form.reset();
+        successMessage.classList.add('show');
+        
+        // Hide success message after 5 seconds
+        setTimeout(() => {
+          successMessage.classList.remove('show');
+        }, 5000);
+      }, 2000);
+    }
+
+    // Smooth Scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          const headerOffset = 80;
+          const elementPosition = target.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      const navbar = document.querySelector('.navbar');
+      if (window.scrollY > 50) {
+        navbar.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+      } else {
+        navbar.style.boxShadow = 'none';
+      }
+    });
+  </script>
 </body>
 </html>

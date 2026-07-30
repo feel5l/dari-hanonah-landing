@@ -1445,6 +1445,13 @@
         <p class="section-description">
           شاهدي بعض اللحظات الجميلة من يوم طفلك في داري الحنونة، من الأنشطة التعليمية إلى اللحظات الترفيهية
         </p>
+        <!-- زر رفع الصور -->
+        <button class="btn btn-primary upload-btn" onclick="openUploadModal()" style="margin-top: 1.5rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="margin-left: 0.5rem;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+          </svg>
+          إضافة صور جديدة
+        </button>
       </div>
       <div class="gallery-grid">
         <div class="gallery-item" onclick="openGalleryModal(0)">
@@ -1775,6 +1782,249 @@
         navbar.style.boxShadow = 'none';
       }
     });
+
+    // Upload Modal Functions
+    function openUploadModal() {
+      document.getElementById('uploadModal').style.display = 'flex';
+      document.getElementById('passwordStep').style.display = 'block';
+      document.getElementById('uploadStep').style.display = 'none';
+      document.getElementById('uploadPassword').value = '';
+      document.getElementById('passwordError').style.display = 'none';
+    }
+
+    function closeUploadModal() {
+      document.getElementById('uploadModal').style.display = 'none';
+    }
+
+    function checkPassword() {
+      const password = document.getElementById('uploadPassword').value;
+      const correctPassword = 'dari2024'; // يمكنك تغيير كلمة المرور هنا
+      
+      if (password === correctPassword) {
+        document.getElementById('passwordStep').style.display = 'none';
+        document.getElementById('uploadStep').style.display = 'block';
+        document.getElementById('passwordError').style.display = 'none';
+      } else {
+        document.getElementById('passwordError').style.display = 'block';
+      }
+    }
+
+    function handleImageUpload(event) {
+      const files = event.target.files;
+      if (files.length > 0) {
+        const galleryGrid = document.querySelector('.gallery-grid');
+        
+        Array.from(files).forEach(file => {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const newItem = document.createElement('div');
+            newItem.className = 'gallery-item';
+            newItem.innerHTML = `
+              <img src="${e.target.result}" alt="صورة جديدة">
+              <div class="gallery-overlay">
+                <span class="gallery-caption">صورة جديدة</span>
+              </div>
+            `;
+            galleryGrid.appendChild(newItem);
+          };
+          reader.readAsDataURL(file);
+        });
+        
+        alert('تم رفع الصور بنجاح!');
+        closeUploadModal();
+      }
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('uploadModal');
+      if (event.target === modal) {
+        closeUploadModal();
+      }
+    }
   </script>
+
+  <!-- Upload Modal -->
+  <div id="uploadModal" class="upload-modal">
+    <div class="upload-modal-content">
+      <div class="upload-modal-header">
+        <h3>إضافة صور جديدة</h3>
+        <button class="close-modal" onclick="closeUploadModal()">&times;</button>
+      </div>
+      
+      <!-- Password Step -->
+      <div id="passwordStep" class="upload-step">
+        <div class="password-icon">🔒</div>
+        <p class="step-description">يرجى إدخال كلمة المرور للمتابعة</p>
+        <input type="password" id="uploadPassword" class="password-input" placeholder="كلمة المرور">
+        <p id="passwordError" class="error-message" style="display: none;">كلمة المرور غير صحيحة</p>
+        <button class="btn btn-primary" onclick="checkPassword()">تأكيد</button>
+      </div>
+      
+      <!-- Upload Step -->
+      <div id="uploadStep" class="upload-step" style="display: none;">
+        <div class="upload-icon">📤</div>
+        <p class="step-description">اختر الصور التي تريد رفعها</p>
+        <label class="file-input-label">
+          <input type="file" id="imageUpload" class="file-input" multiple accept="image/*" onchange="handleImageUpload(event)">
+          <span class="file-input-text">اختر الصور</span>
+        </label>
+        <p class="file-hint">يمكنك اختيار عدة صور مرة واحدة</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload Modal Styles -->
+  <style>
+    .upload-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .upload-modal-content {
+      background: var(--surface);
+      border-radius: var(--radius-2xl);
+      width: 100%;
+      max-width: 450px;
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+    }
+
+    .upload-modal-header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .upload-modal-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.3s;
+    }
+
+    .close-modal:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .upload-step {
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .password-icon,
+    .upload-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .step-description {
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+    }
+
+    .password-input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      font-size: 1rem;
+      font-family: inherit;
+      text-align: center;
+      margin-bottom: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .password-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .error-message {
+      color: #dc2626;
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+
+    .file-input-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .file-input-label:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .file-hint {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 1rem;
+    }
+
+    .upload-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 640px) {
+      .upload-modal-content {
+        margin: 1rem;
+      }
+
+      .upload-step {
+        padding: 1.5rem;
+      }
+
+      .password-icon,
+      .upload-icon {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
 </body>
 </html>

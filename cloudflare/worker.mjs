@@ -125,7 +125,9 @@ async function commitManifestToGitHub(images, message, config, fetchImpl) {
   const apiBase = `https://api.github.com/repos/${config.githubOwner}/${config.githubRepo}/contents/${config.manifestPath}`;
   const authHeaders = {
     authorization: `Bearer ${config.githubToken}`,
-    accept: 'application/vnd.github+json'
+    accept: 'application/vnd.github+json',
+    'user-agent': 'dari-hanonah-worker',
+    'x-github-api-version': '2022-11-28'
   };
 
   const headResponse = await fetchImpl(`${apiBase}?ref=${encodeURIComponent(config.githubBranch)}`, {
@@ -133,6 +135,7 @@ async function commitManifestToGitHub(images, message, config, fetchImpl) {
   });
 
   if (!headResponse.ok) {
+    console.error('GitHub head request failed', headResponse.status, await headResponse.text());
     throw new Error(`github-head-${headResponse.status}`);
   }
 
@@ -158,6 +161,7 @@ async function commitManifestToGitHub(images, message, config, fetchImpl) {
   });
 
   if (!putResponse.ok) {
+    console.error('GitHub put request failed', putResponse.status, await putResponse.text());
     throw new Error(`github-put-${putResponse.status}`);
   }
 

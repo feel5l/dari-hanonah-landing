@@ -220,6 +220,8 @@ test('manifest endpoint works without relying on Buffer globals', { concurrency:
     const payload = await readJson(response);
     assert.equal(payload.ok, true);
     assert.equal(calls.length, 2);
+    assert.equal(calls[0].options.headers['user-agent'], 'dari-hanonah-worker');
+    assert.equal(calls[0].options.headers['x-github-api-version'], '2022-11-28');
     assert.equal(calls[1].options.method, 'PUT');
   } finally {
     globalThis.Buffer = originalBuffer;

@@ -1,6 +1,8 @@
 const WORKER_MODE = 'worker';
 const SESSION_PREFIX = 'dariws_';
 const DEFAULT_SESSION_TTL_MS = 12 * 60 * 60 * 1000;
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
 
 function jsonResponse(payload, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(payload), {
@@ -15,9 +17,22 @@ function jsonResponse(payload, status = 200, extraHeaders = {}) {
   });
 }
 
+function bytesToBase64(value) {
+  let binary = '';
+  const chunkSize = 0x8000;
+
+  for (let index = 0; index < value.length; index += chunkSize) {
+    const chunk = value.subarray(index, index + chunkSize);
+    binary += String.fromCharCode(...chunk);
+  }
+
+  return btoa(binary);
+}
+
 function base64UrlEncode(value) {
-  return Buffer.from(value)
-    .toString('base64')
+  const bytes = value instanceof Uint8Array ? value : textEncoder.encode(value);
+
+  return bytesToBase64(bytes)
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=+$/g, '');
@@ -26,20 +41,26 @@ function base64UrlEncode(value) {
 function base64UrlDecode(value) {
   const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
   const padding = normalized.length % 4 === 0 ? '' : '='.repeat(4 - (normalized.length % 4));
-  return Buffer.from(normalized + padding, 'base64').toString('utf8');
+  const binary = atob(normalized + padding);
+  const bytes = new Uint8Array(binary.length);
+
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+
+  return textDecoder.decode(bytes);
 }
 
 async function signValue(value, secret) {
-  const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey(
     'raw',
-    encoder.encode(secret),
+    textEncoder.encode(secret),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
     ['sign']
   );
-  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(value));
-  return base64UrlEncode(Buffer.from(signature));
+  const signature = await crypto.subtle.sign('HMAC', key, textEncoder.encode(value));
+  return base64UrlEncode(new Uint8Array(signature));
 }
 
 function getWorkerConfig(env = {}) {
@@ -132,7 +153,7 @@ async function commitManifestToGitHub(images, message, config, fetchImpl) {
       message: message || 'chore(gallery): update via worker',
       branch: config.githubBranch,
       sha: headBody.sha,
-      content: Buffer.from(JSON.stringify(manifest, null, 2), 'utf8').toString('base64')
+      content: bytesToBase64(textEncoder.encode(JSON.stringify(manifest, null, 2)))
     })
   });
 

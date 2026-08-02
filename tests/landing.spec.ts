@@ -165,8 +165,79 @@ test.describe('Landing page regression guards', () => {
     expect(stored).toBe('github_pat_TEST_FAKE_TOKEN');
   });
 
-  test('shows gallery delete controls only after admin enables edit mode', async ({ page }) => {
+  test('shows invalid token status when GitHub PAT validation fails', async ({ page }) => {
+    await page.route('https://api.github.com/repos/feel5l/dari-hanonah-landing/contents/gallery.json?ref=main', async (route) => {
+      await route.fulfill({
+        status: 401,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Bad credentials' })
+      });
+    });
+
     await page.goto('/');
+    await page.locator('.upload-btn').click();
+    await page.locator('#adminPasswordInput').fill('dari2024');
+    await page.locator('#adminLoginModal button[type="submit"]').click();
+    await page.locator('.admin-tab[data-tab="settings"]').click();
+
+    await page.locator('#githubPatInput').fill('github_pat_TEST_FAKE_TOKEN');
+    await page.locator('#githubPatForm button[type="submit"]').click();
+
+    await expect(page.locator('#githubPatStatus')).toContainText('غير صالح');
+  });
+
+  test('blocks edit mode when GitHub PAT is invalid', async ({ page }) => {
+    let manifest = {
+      version: 1,
+      updatedAt: '2026-08-02T00:00:00Z',
+      images: [
+        { id: 'invalid-edit-a', src: 'https://example.com/invalid-edit-a.png', alt: 'invalid-edit-a', caption: 'invalid-edit-a' }
+      ]
+    };
+
+    await page.route('**/gallery.json?t=*', async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(manifest) });
+    });
+
+    await page.route('https://api.github.com/repos/feel5l/dari-hanonah-landing/contents/gallery.json?ref=main', async (route) => {
+      await route.fulfill({
+        status: 401,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Bad credentials' })
+      });
+    });
+
+    await page.goto('/');
+    await page.evaluate(() => localStorage.setItem('dariGithubPat', 'github_pat_TEST_FAKE_TOKEN'));
+    await page.locator('.upload-btn').click();
+    await page.locator('#adminPasswordInput').fill('dari2024');
+    await page.locator('#adminLoginModal button[type="submit"]').click();
+    await page.locator('.admin-tab[data-tab="upload"]').click();
+    await page.locator('#toggleGalleryEditMode').click();
+
+    await expect(page.locator('.toast.error').last()).toContainText('صلاحية');
+    await expect(page.locator('.gallery-grid .gallery-delete-btn')).toHaveCount(0);
+  });
+
+  test('shows gallery delete controls only after admin enables edit mode', async ({ page }) => {
+    let manifest = {
+      version: 1,
+      updatedAt: '2026-08-02T00:00:00Z',
+      images: [
+        { id: 'edit-mode-a', src: 'https://example.com/edit-mode-a.png', alt: 'edit-mode-a', caption: 'edit-mode-a' }
+      ]
+    };
+
+    await page.route('**/gallery.json?t=*', async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(manifest) });
+    });
+
+    await page.route('https://api.github.com/repos/feel5l/dari-hanonah-landing/contents/gallery.json?ref=main', async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ sha: 'edit-mode-sha' }) });
+    });
+
+    await page.goto('/');
+    await page.evaluate(() => localStorage.setItem('dariGithubPat', 'github_pat_TEST_FAKE_TOKEN'));
     await page.locator('.upload-btn').click();
     await page.locator('#adminPasswordInput').fill('dari2024');
     await page.locator('#adminLoginModal button[type="submit"]').click();
@@ -211,11 +282,12 @@ test.describe('Landing page regression guards', () => {
     await page.locator('#adminLoginModal button[type="submit"]').click();
     await page.locator('.admin-tab[data-tab="upload"]').click();
     await page.locator('#toggleGalleryEditMode').click();
+    await expect(page.locator('[data-testid="single-delete-button"][data-image-id="seq-a"]')).toBeVisible();
 
     await page.locator('[data-testid="single-delete-button"][data-image-id="seq-a"]').click();
+    await expect(page.locator('.gallery-grid img[data-id="seq-a"]')).toHaveCount(0);
     await page.locator('[data-testid="single-delete-button"][data-image-id="seq-b"]').click();
 
-    await expect(page.locator('.gallery-grid img[data-id="seq-a"]')).toHaveCount(0);
     await expect(page.locator('.gallery-grid img[data-id="seq-b"]')).toHaveCount(0);
     await expect
       .poll(async () => page.evaluate(() => JSON.parse(localStorage.getItem('dariTrashBin') || '[]').length))
@@ -256,6 +328,7 @@ test.describe('Landing page regression guards', () => {
 
     await page.locator('.gallery-item:has(img[data-id="bulk-a"])').click();
     await page.locator('.gallery-item:has(img[data-id="bulk-b"])').click();
+    await expect(page.locator('[data-testid="bulk-delete-button"]')).toBeEnabled();
     await page.locator('[data-testid="bulk-delete-button"]').click();
 
     await expect(page.locator('.gallery-grid img[data-id="bulk-a"]')).toHaveCount(0);
@@ -291,7 +364,7 @@ test.describe('Landing page regression guards', () => {
       buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9WnQm4sAAAAASUVORK5CYII=', 'base64')
     });
 
-    await expect(page.locator('.toast.error, .toast.warning')).toContainText('لم يتم نشر الصورة للجميع');
+    await expect(page.locator('.toast.error, .toast.warning')).toContainText('المفتاح غير صالح');
     await expect(page.locator('.gallery-grid img[alt="publish-failure.png"]')).toHaveCount(0);
   });
 

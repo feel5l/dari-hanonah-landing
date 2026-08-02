@@ -2708,8 +2708,10 @@
       try {
         if (pat) {
           localStorage.setItem(GITHUB_PAT_KEY, pat);
+          setGitHubPatValidationState('unknown', '⏳ تم حفظ المفتاح محلياً وبانتظار التحقق.');
         } else {
           localStorage.removeItem(GITHUB_PAT_KEY);
+          setGitHubPatValidationState('missing');
         }
       } catch (e) {
         console.error('Failed to store GitHub PAT', e);
@@ -2718,6 +2720,155 @@
 
     function isGalleryPersistenceConfigured() {
       return Boolean(getStoredGitHubPat());
+    }
+
+    let githubPatValidationState = {
+      status: isGalleryPersistenceConfigured() ? 'unknown' : 'missing',
+      message: '',
+      checkedAt: '',
+      lastError: ''
+    };
+
+    function setGitHubPatValidationState(status, message = '', lastError = '') {
+      githubPatValidationState = {
+        status,
+        message,
+        checkedAt: new Date().toISOString(),
+        lastError
+      };
+      return githubPatValidationState;
+    }
+
+    function getGitHubValidationDisplayState() {
+      switch (githubPatValidationState.status) {
+        case 'valid':
+          return {
+            background: '#d1fae5',
+            color: '#065f46',
+            text: githubPatValidationState.message || '✅ تم التحقق من المفتاح. خدمات المعرض المنشور تعمل بشكل صحيح.'
+          };
+        case 'checking':
+          return {
+            background: '#dbeafe',
+            color: '#1d4ed8',
+            text: githubPatValidationState.message || '⏳ جاري التحقق من صلاحية المفتاح...'
+          };
+        case 'invalid':
+          return {
+            background: '#fee2e2',
+            color: '#991b1b',
+            text: githubPatValidationState.message || '❌ المفتاح غير صالح أو انتهت صلاحيته.'
+          };
+        case 'error':
+          return {
+            background: '#fef3c7',
+            color: '#92400e',
+            text: githubPatValidationState.message || '⚠️ تعذر التحقق من GitHub حالياً.'
+          };
+        case 'missing':
+        default:
+          return {
+            background: '#fef3c7',
+            color: '#92400e',
+            text: '⚠️ لا يوجد مفتاح. الصور ستظهر في هذا المتصفح فقط ولن تظهر للزوار الآخرين.'
+          };
+      }
+    }
+
+    function mapGitHubFailureMessage(statusCode, rawMessage = '') {
+      const message = String(rawMessage || '').toLowerCase();
+      if (statusCode === 401 || message.includes('bad credentials')) {
+        return '❌ المفتاح غير صالح. احفظ مفتاح GitHub جديداً بصلاحية Contents: Read and write.';
+      }
+      if (statusCode === 403 && message.includes('rate limit')) {
+        return '⚠️ تم تجاوز حد طلبات GitHub مؤقتاً. حاول مرة أخرى بعد قليل.';
+      }
+      if (statusCode === 403) {
+        return '❌ صلاحيات المفتاح غير كافية. يلزم Contents: Read and write على المستودع.';
+      }
+      if (statusCode === 404) {
+        return '❌ تعذر الوصول إلى ملف المعرض المنشور. تحقق من إعدادات المستودع والفرع.';
+      }
+      return '⚠️ تعذر التحقق من GitHub حالياً. تحقق من المفتاح أو من الاتصال ثم أعد المحاولة.';
+    }
+
+    async function validateGitHubPat(pat = getStoredGitHubPat()) {
+      if (!pat) {
+        return {
+          valid: false,
+          ...setGitHubPatValidationState('missing')
+        };
+      }
+
+      setGitHubPatValidationState('checking', '⏳ جاري التحقق من صلاحية المفتاح...');
+      renderGitHubSettingsTab();
+
+      const apiBase = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.manifestPath}?ref=${encodeURIComponent(GITHUB_CONFIG.branch)}`;
+
+      try {
+        const response = await fetch(apiBase, {
+          headers: {
+            'Authorization': `Bearer ${pat}`,
+            'Accept': 'application/vnd.github+json'
+          }
+        });
+
+        if (!response.ok) {
+          const errorBody = await response.json().catch(() => ({}));
+          const message = mapGitHubFailureMessage(response.status, errorBody.message || '');
+          return {
+            valid: false,
+            ...setGitHubPatValidationState(
+              response.status === 401 || response.status === 403 || response.status === 404 ? 'invalid' : 'error',
+              message,
+              errorBody.message || `GitHub GET HTTP ${response.status}`
+            )
+          };
+        }
+
+        return {
+          valid: true,
+          ...setGitHubPatValidationState('valid', '✅ تم التحقق من المفتاح. خدمات المعرض المنشور جاهزة.')
+        };
+      } catch (error) {
+        return {
+          valid: false,
+          ...setGitHubPatValidationState(
+            'error',
+            '⚠️ تعذر الاتصال بـ GitHub الآن. تحقق من الشبكة ثم أعد المحاولة.',
+            error.message || 'network-error'
+          )
+        };
+      }
+    }
+
+    async function ensureGalleryPublishingReady(actionLabel) {
+      const pat = getStoredGitHubPat();
+      if (!pat) {
+        setGitHubPatValidationState('missing');
+        renderGitHubSettingsTab();
+        if (typeof switchAdminTab === 'function' && isAdminLoggedIn) {
+          switchAdminTab('settings');
+        }
+        showToast(`لا يمكن ${actionLabel} لأن مفتاح GitHub غير محفوظ. افتح الإعدادات أولاً.`, 'error');
+        return false;
+      }
+
+      let validation = githubPatValidationState;
+      if (validation.status !== 'valid') {
+        validation = await validateGitHubPat(pat);
+      }
+
+      renderGitHubSettingsTab();
+      // Cached validation state stores status only, while fresh validation
+      // responses also include a boolean flag. Accept either shape.
+      if (validation.valid || validation.status === 'valid') return true;
+
+      if (typeof switchAdminTab === 'function' && isAdminLoggedIn) {
+        switchAdminTab('settings');
+      }
+      showToast(validation.message || `تعذر ${actionLabel} لأن GitHub غير جاهز حالياً.`, 'error');
+      return false;
     }
 
     // In-memory cache of the current manifest; populated on load
@@ -2903,6 +3054,21 @@
       appendGalleryItem(entry);
     }
 
+    function getGalleryEntriesFromGrid() {
+      return Array.from(document.querySelectorAll('.gallery-grid .gallery-item'))
+        .map((item) => {
+          const img = item.querySelector('img');
+          if (!img) return null;
+          return {
+            id: item.dataset.id || img.dataset.id || '',
+            src: img.src,
+            alt: img.alt || 'صورة',
+            caption: item.querySelector('.gallery-caption')?.textContent || 'صورة'
+          };
+        })
+        .filter(Boolean);
+    }
+
     // Push the in-memory manifest to the repo. The PAT must be set
     // or this call is a no-op (we still keep the in-memory + local
     // state so the current session works).
@@ -2910,6 +3076,7 @@
       const pat = getStoredGitHubPat();
       if (!pat) {
         console.warn('GitHub PAT missing; manifest not committed to repo.');
+        setGitHubPatValidationState('missing');
         return { committed: false, reason: 'missing-pat' };
       }
       const apiBase = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.manifestPath}`;
@@ -2919,7 +3086,14 @@
           headers: { 'Authorization': `Bearer ${pat}`, 'Accept': 'application/vnd.github+json' }
         });
         if (!head.ok) {
-          throw new Error(`GitHub GET HTTP ${head.status}`);
+          const errBody = await head.json().catch(() => ({}));
+          const mappedMessage = mapGitHubFailureMessage(head.status, errBody.message || '');
+          setGitHubPatValidationState(
+            head.status === 401 || head.status === 403 || head.status === 404 ? 'invalid' : 'error',
+            mappedMessage,
+            errBody.message || `GitHub GET HTTP ${head.status}`
+          );
+          throw new Error(errBody.message || `GitHub GET HTTP ${head.status}`);
         }
         const headData = await head.json();
         const sha = headData.sha;
@@ -2942,8 +3116,15 @@
         });
         if (!put.ok) {
           const errBody = await put.json().catch(() => ({}));
+          const mappedMessage = mapGitHubFailureMessage(put.status, errBody.message || '');
+          setGitHubPatValidationState(
+            put.status === 401 || put.status === 403 || put.status === 404 ? 'invalid' : 'error',
+            mappedMessage,
+            errBody.message || `GitHub PUT HTTP ${put.status}`
+          );
           throw new Error(errBody.message || `GitHub PUT HTTP ${put.status}`);
         }
+        setGitHubPatValidationState('valid', '✅ تم التحقق من المفتاح. خدمات المعرض المنشور جاهزة.');
         return { committed: true };
       } catch (e) {
         console.error('Failed to commit gallery manifest:', e);
@@ -3011,6 +3192,12 @@
       const input = event.target;
       const files = input.files;
       if (!files || files.length === 0) return;
+
+      const ready = await ensureGalleryPublishingReady('رفع الصور');
+      if (!ready) {
+        input.value = '';
+        return;
+      }
 
       const isAdminUpload = input.id === 'imageUploadAdmin';
       const progressDiv = document.getElementById(isAdminUpload ? 'uploadProgressAdmin' : 'uploadProgress');
@@ -3261,6 +3448,8 @@
 
     async function deleteImage(imageId, options = {}) {
       const { skipRender = false, silent = false } = options;
+      const ready = await ensureGalleryPublishingReady('حذف الصورة');
+      if (!ready) return false;
       const galleryGrid = document.querySelector('.gallery-grid');
       if (!galleryGrid) return false;
       const galleryItems = galleryGrid.querySelectorAll('.gallery-item');
@@ -3290,9 +3479,13 @@
           expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
         };
 
-        const removeResult = await removeImageFromManifestById(imageId);
+        let removeResult = await removeImageFromManifestById(imageId);
+        if (!removeResult.committed && removeResult.reason === 'not-found') {
+          const nextEntries = getGalleryEntriesFromGrid().filter((entry) => entry.id && entry.id !== imageId);
+          removeResult = await persistGalleryManifest(nextEntries, `chore(gallery): remove ${imageId}`);
+        }
         if (!removeResult.committed) {
-          showToast('تعذر حذف الصورة من المعرض المنشور', 'error');
+          showToast(githubPatValidationState.message || 'تعذر حذف الصورة من المعرض المنشور', 'error');
           return false;
         }
 
@@ -3321,6 +3514,8 @@
 
     // Restore image from trash
     async function restoreImage(imageId) {
+      const ready = await ensureGalleryPublishingReady('استعادة الصورة');
+      if (!ready) return false;
       const trashIndex = trashBin.findIndex(item => item.id === imageId);
 
       if (trashIndex === -1) {
@@ -3343,7 +3538,7 @@
         const next = galleryManifest.images.concat([restoredImage]);
         const restoreResult = await persistGalleryManifest(next, `feat(gallery): restore ${restoredImage.id}`);
         if (!restoreResult.published) {
-          showToast('تعذر إعادة الصورة إلى المعرض المنشور', 'error');
+          showToast(githubPatValidationState.message || 'تعذر إعادة الصورة إلى المعرض المنشور', 'error');
           return false;
         }
       }
@@ -4413,6 +4608,9 @@
         syncGalleryEditMode();
       } else if (tabName === 'settings') {
         renderGitHubSettingsTab();
+        if (isGalleryPersistenceConfigured() && githubPatValidationState.status !== 'checking') {
+          validateGitHubPat();
+        }
       }
     }
     
@@ -4426,10 +4624,15 @@
       adminLogin();
     }
 
-    function toggleGalleryEditMode() {
+    async function toggleGalleryEditMode() {
       if (!isAdminLoggedIn) {
         showToast('سجّل الدخول أولاً', 'error');
         return;
+      }
+
+      if (!isGalleryEditMode) {
+        const ready = await ensureGalleryPublishingReady('تفعيل وضع التحرير');
+        if (!ready) return;
       }
 
       isGalleryEditMode = !isGalleryEditMode;
@@ -4839,28 +5042,25 @@
       if (document.getElementById('settingsTabContent')) {
         renderGitHubSettingsTab();
       }
+      if (isGalleryPersistenceConfigured()) {
+        validateGitHubPat();
+      }
     });
 
-    // Render the GitHub PAT status block (configured / not configured).
+    // Render the GitHub PAT status block (configured / valid / invalid).
     function renderGitHubSettingsTab() {
       const status = document.getElementById('githubPatStatus');
       const input = document.getElementById('githubPatInput');
       if (!status) return;
-      const configured = isGalleryPersistenceConfigured();
-      if (configured) {
-        status.style.background = '#d1fae5';
-        status.style.color = '#065f46';
-        status.textContent = '✅ المفتاح محفوظ. الصور ستُحفظ للجميع تلقائياً.';
-        if (input) input.value = '';
-      } else {
-        status.style.background = '#fef3c7';
-        status.style.color = '#92400e';
-        status.textContent = '⚠️ لا يوجد مفتاح. الصور ستظهر في هذا المتصفح فقط ولن تظهر للزوار الآخرين.';
-      }
+      const displayState = getGitHubValidationDisplayState();
+      status.style.background = displayState.background;
+      status.style.color = displayState.color;
+      status.textContent = displayState.text;
+      if (input && githubPatValidationState.status === 'valid') input.value = '';
     }
 
     // Save the GitHub PAT to localStorage (admin only).
-    function saveGitHubPat(event) {
+    async function saveGitHubPat(event) {
       if (event) event.preventDefault();
       const input = document.getElementById('githubPatInput');
       if (!input) return;
@@ -4873,16 +5073,24 @@
         showToast('صيغة المفتاح غير صحيحة. المفاتيح الحديثة تبدأ بـ github_pat_', 'error');
         return;
       }
+      const validation = await validateGitHubPat(value);
+      if (!validation.valid) {
+        renderGitHubSettingsTab();
+        showToast(validation.message || 'تعذر التحقق من المفتاح', 'error');
+        return;
+      }
+
       setStoredGitHubPat(value);
-      input.value = '';
       renderGitHubSettingsTab();
-      showToast('تم حفظ المفتاح بنجاح', 'success');
+      input.value = '';
+      showToast('تم حفظ المفتاح والتحقق منه بنجاح', 'success');
     }
 
     // Clear the stored GitHub PAT.
     function clearGitHubPat() {
       if (!confirm('هل أنت متأكد من حذف المفتاح؟ لن تُحفظ الصور للزوار بعد ذلك.')) return;
       setStoredGitHubPat('');
+      setGitHubPatValidationState('missing');
       renderGitHubSettingsTab();
       showToast('تم حذف المفتاح', 'info');
     }

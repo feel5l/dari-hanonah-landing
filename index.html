@@ -2697,7 +2697,8 @@
     const GITHUB_PAT_KEY = 'dariGithubPat';
     const WORKER_API_BASE_KEY = 'dariWorkerApiBase';
     const WORKER_SESSION_KEY = 'dariWorkerSessionToken';
-    const DEFAULT_WORKER_API_BASE = '';
+    const WORKER_API_BASE_DISABLED = '__disabled__';
+    const DEFAULT_WORKER_API_BASE = 'https://dari-hanonah-gallery.gemini-linkin40.workers.dev';
 
     function getStoredGitHubPat() {
       try {
@@ -2723,7 +2724,9 @@
 
     function getStoredWorkerApiBase() {
       try {
-        return localStorage.getItem(WORKER_API_BASE_KEY) || DEFAULT_WORKER_API_BASE || '';
+        const storedValue = localStorage.getItem(WORKER_API_BASE_KEY);
+        if (storedValue === WORKER_API_BASE_DISABLED) return '';
+        return storedValue || DEFAULT_WORKER_API_BASE || '';
       } catch (e) {
         return DEFAULT_WORKER_API_BASE || '';
       }

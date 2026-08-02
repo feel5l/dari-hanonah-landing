@@ -1,5 +1,12 @@
 import { test, expect } from '@playwright/test';
 
+async function forceGitHubPatMode(page) {
+  await page.addInitScript(() => {
+    localStorage.setItem('dariWorkerApiBase', '__disabled__');
+    localStorage.removeItem('dariWorkerSessionToken');
+  });
+}
+
 test.describe('Landing page regression guards', () => {
   test('preserves critical CTA links and contact form hook', async ({ page }) => {
     await page.goto('/');
@@ -85,6 +92,7 @@ test.describe('Landing page regression guards', () => {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ content: { sha: 'upload-next-sha' } }) });
     });
 
+    await forceGitHubPatMode(page);
     await page.goto('/');
     await page.evaluate(() => {
       localStorage.setItem('dariGithubPat', 'github_pat_TEST_FAKE_TOKEN');
@@ -115,6 +123,7 @@ test.describe('Landing page regression guards', () => {
 
   test('shows the upload tab inside the admin dashboard on mobile without horizontal scrolling', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
+    await forceGitHubPatMode(page);
     await page.goto('/');
 
     await page.locator('.upload-btn').click();
@@ -146,6 +155,7 @@ test.describe('Landing page regression guards', () => {
   });
 
   test('exposes the GitHub settings tab so the admin can configure persistence', async ({ page }) => {
+    await forceGitHubPatMode(page);
     await page.goto('/');
     await page.locator('.upload-btn').click();
     await page.locator('#adminPasswordInput').fill('dari2024');
@@ -175,6 +185,7 @@ test.describe('Landing page regression guards', () => {
       });
     });
 
+    await forceGitHubPatMode(page);
     await page.goto('/');
     await page.locator('.upload-btn').click();
     await page.locator('#adminPasswordInput').fill('dari2024');
@@ -208,6 +219,7 @@ test.describe('Landing page regression guards', () => {
       });
     });
 
+    await forceGitHubPatMode(page);
     await page.goto('/');
     await page.evaluate(() => localStorage.setItem('dariGithubPat', 'github_pat_TEST_FAKE_TOKEN'));
     await page.locator('.upload-btn').click();
@@ -319,6 +331,7 @@ test.describe('Landing page regression guards', () => {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ sha: 'edit-mode-sha' }) });
     });
 
+    await forceGitHubPatMode(page);
     await page.goto('/');
     await page.evaluate(() => localStorage.setItem('dariGithubPat', 'github_pat_TEST_FAKE_TOKEN'));
     await page.locator('.upload-btn').click();
@@ -358,6 +371,7 @@ test.describe('Landing page regression guards', () => {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ content: { sha: 'seq-next-sha' } }) });
     });
 
+    await forceGitHubPatMode(page);
     await page.goto('/');
     await page.evaluate(() => localStorage.setItem('dariGithubPat', 'github_pat_TEST_FAKE_TOKEN'));
     await page.locator('.upload-btn').click();
@@ -401,6 +415,7 @@ test.describe('Landing page regression guards', () => {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ content: { sha: 'bulk-next-sha' } }) });
     });
 
+    await forceGitHubPatMode(page);
     await page.goto('/');
     await page.evaluate(() => localStorage.setItem('dariGithubPat', 'github_pat_TEST_FAKE_TOKEN'));
     await page.locator('.upload-btn').click();
@@ -422,6 +437,7 @@ test.describe('Landing page regression guards', () => {
   });
 
   test('does not keep the uploaded image in the gallery when manifest publish fails', async ({ page }) => {
+    await forceGitHubPatMode(page);
     await page.goto('/');
 
     await page.evaluate(() => {
@@ -474,6 +490,7 @@ test.describe('Landing page regression guards', () => {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ content: { sha: 'next-sha' } }) });
     });
 
+    await forceGitHubPatMode(page);
     await page.goto('/');
     await page.evaluate(() => {
       localStorage.setItem('dariGithubPat', 'github_pat_TEST_FAKE_TOKEN');
@@ -518,6 +535,7 @@ test.describe('Landing page regression guards', () => {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ content: { sha: 'delete-next-sha' } }) });
     });
 
+    await forceGitHubPatMode(page);
     await page.goto('/');
     await page.evaluate(() => {
       localStorage.setItem('dariGithubPat', 'github_pat_TEST_FAKE_TOKEN');

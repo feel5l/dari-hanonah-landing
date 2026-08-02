@@ -2716,7 +2716,24 @@
     // and updated optimistically after each mutation. Exposed on
     // window for test introspection and external tooling.
     const galleryManifest = { version: 1, updatedAt: '', images: [] };
+    let defaultGalleryEntries = [];
+    let isGalleryEditMode = false;
     window.galleryManifest = galleryManifest;
+
+    async function fetchPublishedGalleryManifest() {
+      const response = await fetch(`${GITHUB_CONFIG.manifestPath}?t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: { 'Accept': 'application/json' }
+      });
+      if (!response.ok) {
+        throw new Error(`Manifest HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      if (!data || !Array.isArray(data.images)) {
+        throw new Error('Manifest shape invalid');
+      }
+      return data;
+    }
 
     // Load manifest from the deployed gallery.json (same origin).
     // Falls back to whatever is in localStorage so the page still
@@ -2725,28 +2742,20 @@
     async function loadGalleryManifest() {
       const fallback = readGalleryManifestFromLocalStorage();
       try {
-        const response = await fetch(`${GITHUB_CONFIG.manifestPath}?t=${Date.now()}`, {
-          cache: 'no-store',
-          headers: { 'Accept': 'application/json' }
-        });
-        if (!response.ok) {
-          throw new Error(`Manifest HTTP ${response.status}`);
-        }
-        const data = await response.json();
-        if (data && Array.isArray(data.images)) {
-          replaceGalleryManifest(data);
-          saveGalleryManifestToLocalStorage(galleryManifest);
-          return galleryManifest;
-        }
-        throw new Error('Manifest shape invalid');
+        const data = await fetchPublishedGalleryManifest();
+        replaceGalleryManifest(data);
+        saveGalleryManifestToLocalStorage(galleryManifest);
+        return galleryManifest;
       } catch (e) {
         console.warn('Falling back to cached manifest:', e.message);
         if (fallback) {
           replaceGalleryManifest(fallback);
         } else {
-          // Final fallback: build a manifest from the 8 hardcoded
-          // defaults so the page never shows an empty gallery.
-          replaceGalleryManifest({ version: 1, updatedAt: '', images: collectDefaultImages() });
+          replaceGalleryManifest({
+            version: 1,
+            updatedAt: '',
+            images: defaultGalleryEntries.length > 0 ? defaultGalleryEntries.slice() : collectDefaultImages()
+          });
         }
         return galleryManifest;
       }
@@ -2799,17 +2808,14 @@
     function renderGalleryFromManifest(entries) {
       const grid = document.querySelector('.gallery-grid');
       if (!grid) return;
-      // Keep any hardcoded defaults at the top so the page still
-      // shows something meaningful even if the manifest is empty
-      // (e.g. transient network blip). Then add manifest items that
-      // are not already present.
-      const defaults = Array.from(grid.querySelectorAll('.gallery-item:not(.custom)'));
-      const existingSrcs = new Set(defaults.map((d) => d.querySelector('img')?.getAttribute('src')));
+      const safeEntries = Array.isArray(entries) && entries.length > 0
+        ? entries
+        : (defaultGalleryEntries.length > 0 ? defaultGalleryEntries : collectDefaultImages());
 
-      entries.forEach((entry) => {
-        if (!entry || !entry.src || existingSrcs.has(entry.src)) return;
+      grid.innerHTML = '';
+      safeEntries.forEach((entry) => {
+        if (!entry || !entry.src) return;
         appendGalleryItem(entry);
-        existingSrcs.add(entry.src);
       });
     }
 
@@ -2827,7 +2833,11 @@
           <span class="gallery-caption">${entry.caption || 'صورة'}</span>
         </div>
       `;
+      if (isAdminLoggedIn && isGalleryEditMode && entry.id) {
+        injectDeleteButton(item, entry.id);
+      }
       item.onclick = function () {
+        if (isGalleryEditMode) return;
         const allItems = document.querySelectorAll('.gallery-item');
         const index = Array.from(allItems).indexOf(item);
         if (typeof openGalleryModal === 'function') openGalleryModal(index);
@@ -2896,8 +2906,10 @@
     // private mode) we fall back to localStorage and finally to
     // the 8 hardcoded defaults in the HTML.
     document.addEventListener('DOMContentLoaded', async function () {
+      defaultGalleryEntries = collectDefaultImages();
       await loadGalleryManifest();
       renderGalleryFromManifest(galleryManifest.images);
+      syncGalleryEditMode();
     });
 
     // Persist the given list of manifest entries. Updates the
@@ -2912,12 +2924,10 @@
       });
       saveGalleryManifestToLocalStorage(galleryManifest);
       const result = await commitGalleryManifestToRepo(galleryManifest, statusMessage);
-      if (result.committed) {
-        showToast('تم حفظ المعرض للجميع ✓', 'success');
-      } else if (result.reason && result.reason !== 'missing-pat') {
-        showToast('تم الحفظ محلياً، تعذر النشر للجميع الآن', 'warning');
+      if (!result.committed) {
+        return { committed: false, published: false, reason: result.reason || 'commit-failed' };
       }
-      return result;
+      return { committed: true, published: true };
     }
 
     // Build a manifest entry from a file about to be uploaded.
@@ -2954,10 +2964,9 @@
       const progressDiv = document.getElementById(isAdminUpload ? 'uploadProgressAdmin' : 'uploadProgress');
       const progressFill = document.getElementById(isAdminUpload ? 'progressFillAdmin' : 'progressFill');
       const progressText = document.getElementById(isAdminUpload ? 'progressTextAdmin' : 'progressText');
-      const galleryGrid = document.querySelector('.gallery-grid');
       const newEntries = [];
 
-      if (!progressDiv || !progressFill || !progressText || !galleryGrid) {
+      if (!progressDiv || !progressFill || !progressText) {
         console.error('Upload UI elements are missing for the current upload context');
         showToast('تعذر تجهيز واجهة الرفع', 'error');
         return;
@@ -3067,25 +3076,10 @@
             uploadedImages.push({ url: imageUrl, source: uploadSource });
           }
 
-          // Add to gallery if we have an image URL
+          // Prepare for manifest publish once the CDN upload succeeds.
           if (imageUrl) {
             const entry = buildManifestEntryFromFile(file, imageUrl);
             newEntries.push(entry);
-            const newItem = document.createElement('div');
-            newItem.className = 'gallery-item custom';
-            newItem.dataset.id = entry.id;
-            newItem.innerHTML = `
-              <img src="${imageUrl}" alt="${file.name}" loading="lazy">
-              <div class="gallery-overlay">
-                <span class="gallery-caption">${entry.caption}</span>
-              </div>
-            `;
-            newItem.onclick = function() {
-              const allItems = document.querySelectorAll('.gallery-item');
-              const index = Array.from(allItems).indexOf(newItem);
-              openGalleryModal(index);
-            };
-            galleryGrid.appendChild(newItem);
           }
 
         } catch (error) {
@@ -3093,29 +3087,25 @@
         }
       }
 
-      // Commit the new entries to the manifest so they survive
-      // across browsers/devices. Best-effort: still updates the
-      // DOM and localStorage even when the repo commit fails.
+      let publishResult = { committed: false, published: false, reason: 'no-images' };
       if (newEntries.length > 0) {
         const next = galleryManifest.images.concat(newEntries);
-        await persistGalleryManifest(next, `feat(gallery): add ${newEntries.length} image(s)`);
+        publishResult = await persistGalleryManifest(next, `feat(gallery): add ${newEntries.length} image(s)`);
       }
 
       progressDiv.style.display = 'none';
       progressFill.style.width = '0%';
       progressText.textContent = 'جاري الرفع...';
-      
-      // Show detailed success message
-      const cloudSuccess = uploadedImages.filter(img => img.source === 'cloudinary').length;
-      const imgbbSuccess = uploadedImages.filter(img => img.source === 'imgbb').length;
-      const localFallback = uploadedImages.filter(img => img.source === 'local').length;
-      
-      let successMessage = `تم رفع ${files.length} صورة بنجاح!`;
-      if (cloudSuccess > 0) successMessage += `\n☁️ Cloudinary: ${cloudSuccess}`;
-      if (imgbbSuccess > 0) successMessage += `\n🖼️ ImgBB: ${imgbbSuccess}`;
-      if (localFallback > 0) successMessage += `\n⚠️ محلي (مؤقت): ${localFallback}`;
-      
-      alert(successMessage);
+
+      if (newEntries.length > 0 && publishResult.published) {
+        renderGalleryFromManifest(galleryManifest.images);
+        syncGalleryEditMode();
+        showToast('تم حفظ الصورة ونشرها للجميع ✓', 'success');
+      } else if (newEntries.length > 0) {
+        showToast('تم رفع الصورة سحابيًا لكن لم يتم نشر الصورة للجميع', 'error');
+      } else if (uploadedImages.length > 0) {
+        showToast('تم رفع الصور لكن لم يتم إنشاء عناصر صالحة للمعرض', 'warning');
+      }
 
       if (isAdminUpload) {
         const dashboardModal = document.getElementById('adminDashboardModal');
@@ -3162,6 +3152,42 @@
     }
     
     // Delete image (move to trash)
+    function injectDeleteButton(item, imageId) {
+      if (!item || !imageId || item.querySelector('.gallery-delete-btn')) return;
+
+      const deleteButton = document.createElement('button');
+      deleteButton.type = 'button';
+      deleteButton.className = 'gallery-delete-btn';
+      deleteButton.textContent = '🗑️';
+      deleteButton.setAttribute('aria-label', 'حذف الصورة');
+      deleteButton.onclick = async function(event) {
+        event.stopPropagation();
+        await deleteImage(imageId);
+      };
+
+      item.appendChild(deleteButton);
+    }
+
+    function syncGalleryEditMode() {
+      const items = document.querySelectorAll('.gallery-grid .gallery-item');
+      const toggleButton = document.getElementById('toggleGalleryEditMode');
+
+      if (toggleButton) {
+        toggleButton.textContent = isGalleryEditMode ? 'إيقاف وضع التحرير' : 'تفعيل وضع التحرير';
+      }
+
+      items.forEach((item) => {
+        item.classList.toggle('edit-mode', Boolean(isAdminLoggedIn && isGalleryEditMode));
+
+        if (isAdminLoggedIn && isGalleryEditMode && item.dataset.id) {
+          injectDeleteButton(item, item.dataset.id);
+        } else {
+          const deleteButton = item.querySelector('.gallery-delete-btn');
+          if (deleteButton) deleteButton.remove();
+        }
+      });
+    }
+
     async function deleteImage(imageId) {
       const galleryGrid = document.querySelector('.gallery-grid');
       const galleryItems = galleryGrid.querySelectorAll('.gallery-item');
@@ -3172,7 +3198,7 @@
       // Find the image
       galleryItems.forEach(item => {
         const img = item.querySelector('img');
-        if (img && img.dataset.id === imageId) {
+        if (img && item.dataset.id === imageId) {
           deletedImage = {
             id: imageId,
             src: img.src,
@@ -3191,15 +3217,19 @@
           expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
         };
 
+        const removeResult = await removeImageFromManifestById(imageId);
+        if (!removeResult.committed) {
+          showToast('تعذر حذف الصورة من المعرض المنشور', 'error');
+          return false;
+        }
+
         trashBin.push(trashItem);
         saveTrashBinToStorage();
 
         // Remove from DOM
         itemToRemove.remove();
-
-        // Commit the updated manifest (drops the entry from the
-        // public gallery.json so it disappears for every visitor).
-        await removeImageFromManifestById(imageId);
+        renderTrashBinTab();
+        syncGalleryEditMode();
 
         // Show success message
         showToast('تم نقل الصورة إلى سلة المحذوفات', 'success');
@@ -3229,20 +3259,21 @@
         caption: image.caption
       };
 
-      // Add to gallery
-      addImageToGallery(restoredImage);
-
-      // Remove from trash
-      trashBin.splice(trashIndex, 1);
-      saveTrashBinToStorage();
-
-      // Re-add to the public manifest so the restored image
-      // reappears for every visitor.
       const exists = galleryManifest.images.some((img) => img.id === restoredImage.id);
       if (!exists) {
         const next = galleryManifest.images.concat([restoredImage]);
-        await persistGalleryManifest(next, `feat(gallery): restore ${restoredImage.id}`);
+        const restoreResult = await persistGalleryManifest(next, `feat(gallery): restore ${restoredImage.id}`);
+        if (!restoreResult.published) {
+          showToast('تعذر إعادة الصورة إلى المعرض المنشور', 'error');
+          return false;
+        }
       }
+
+      trashBin.splice(trashIndex, 1);
+      saveTrashBinToStorage();
+      renderGalleryFromManifest(galleryManifest.images);
+      renderTrashBinTab();
+      syncGalleryEditMode();
 
       showToast('تم استعادة الصورة بنجاح', 'success');
 
@@ -3466,6 +3497,8 @@
     // Admin logout
     function adminLogout() {
       isAdminLoggedIn = false;
+      isGalleryEditMode = false;
+      syncGalleryEditMode();
       hideAdminPanel();
       showToast('تم تسجيل الخروج', 'info');
     }
@@ -3479,6 +3512,7 @@
       if (dashboardModal) {
         dashboardModal.style.display = 'flex';
         renderAdminDashboard();
+        syncGalleryEditMode();
       }
     }
     
@@ -3493,6 +3527,7 @@
       renderStatsTab();
       renderSectionSettingsTab();
       renderTrashBinTab();
+      renderGitHubSettingsTab();
     }
     
     // ===========================================
@@ -3937,7 +3972,6 @@
           z-index: 10;
         }
         
-        .gallery-item:hover .gallery-delete-btn,
         .gallery-item.edit-mode .gallery-delete-btn {
           opacity: 1;
         }
@@ -4272,6 +4306,8 @@
         renderStatsTab();
       } else if (tabName === 'sections') {
         renderSectionSettingsTab();
+      } else if (tabName === 'upload') {
+        syncGalleryEditMode();
       } else if (tabName === 'settings') {
         renderGitHubSettingsTab();
       }
@@ -4285,6 +4321,26 @@
     function handleAdminLogin(event) {
       event.preventDefault();
       adminLogin();
+    }
+
+    function toggleGalleryEditMode() {
+      if (!isAdminLoggedIn) {
+        showToast('سجّل الدخول أولاً', 'error');
+        return;
+      }
+
+      isGalleryEditMode = !isGalleryEditMode;
+      syncGalleryEditMode();
+
+      const toggleButton = document.getElementById('toggleGalleryEditMode');
+      if (toggleButton) {
+        toggleButton.textContent = isGalleryEditMode ? 'إيقاف وضع التحرير' : 'تفعيل وضع التحرير';
+      }
+
+      if (isGalleryEditMode) {
+        hideAdminPanel();
+        showToast('تم تفعيل وضع التحرير. اضغط على أيقونة الحذف فوق الصورة.', 'info');
+      }
     }
     
     // ===========================================
@@ -4600,6 +4656,18 @@
       <!-- Upload Tab -->
       <div id="uploadTabContent" class="admin-tab-content">
         <h3 class="admin-section-title">📤 رفع صور جديدة</h3>
+        <p class="step-description" style="margin-bottom: 1rem;">
+          فعّل وضع التحرير لإظهار أزرار حذف الصور داخل المعرض.
+        </p>
+        <button
+          type="button"
+          id="toggleGalleryEditMode"
+          class="btn btn-danger"
+          onclick="toggleGalleryEditMode()"
+          style="margin-bottom: 1.5rem;"
+        >
+          تفعيل وضع التحرير
+        </button>
         <div id="uploadStepAdmin" style="text-align: center; padding: 2rem;">
           <div class="upload-icon">📤</div>
           <p class="step-description">اختر الصور التي تريد رفعها</p>

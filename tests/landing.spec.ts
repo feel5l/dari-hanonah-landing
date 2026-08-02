@@ -56,7 +56,93 @@ test.describe('Landing page regression guards', () => {
   });
 
   test('allows admin users to reach the upload tab and choose an image without client-side failure', async ({ page }) => {
+    let manifest = {
+      version: 1,
+      updatedAt: '2026-08-02T00:00:00Z',
+      images: [
+        {
+          id: 'default-1',
+          src: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&q=80',
+          alt: 'أطفال في الحضانة',
+          caption: 'أنشطة ترفيهية'
+        },
+        {
+          id: 'default-2',
+          src: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&q=80',
+          alt: 'طفلة سعيدة',
+          caption: 'سعادة الأطفال'
+        },
+        {
+          id: 'default-3',
+          src: 'https://images.unsplash.com/photo-1544776193-352d25ca82cd?w=600&q=80',
+          alt: 'تعلم القراءة',
+          caption: 'تعلم القراءة'
+        },
+        {
+          id: 'default-4',
+          src: 'https://images.unsplash.com/photo-1596495577886-d920f1fb7238?w=600&q=80',
+          alt: 'أنشطة فنية',
+          caption: 'أنشطة فنية'
+        },
+        {
+          id: 'default-5',
+          src: 'https://images.unsplash.com/photo-1588072432836-e10032774350?w=600&q=80',
+          alt: 'لعب الأطفال',
+          caption: 'لعب الأطفال'
+        },
+        {
+          id: 'default-6',
+          src: 'https://images.unsplash.com/photo-1566004100631-35d015d6a491?w=600&q=80',
+          alt: 'تعلم الكتابة',
+          caption: 'تعلم الكتابة'
+        },
+        {
+          id: 'default-7',
+          src: 'https://images.unsplash.com/photo-1505377057305-6f60de705370?w=600&q=80',
+          alt: 'أنشطة رياضية',
+          caption: 'أنشطة رياضية'
+        },
+        {
+          id: 'default-8',
+          src: 'https://images.unsplash.com/photo-1602507343582-9c2b7f3b0a1e?w=600&q=80',
+          alt: 'وقت القصة',
+          caption: 'وقت القصة'
+        }
+      ]
+    };
+
+    await page.route('**/gallery.json?t=*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(manifest)
+      });
+    });
+
+    await page.route('https://api.github.com/repos/feel5l/dari-hanonah-landing/contents/gallery.json?ref=main', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ sha: 'upload-sha' })
+      });
+    });
+
+    await page.route('https://api.github.com/repos/feel5l/dari-hanonah-landing/contents/gallery.json', async (route) => {
+      const payload = JSON.parse(route.request().postData() || '{}');
+      const content = Buffer.from(payload.content, 'base64').toString('utf8');
+      manifest = JSON.parse(content);
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ content: { sha: 'upload-next-sha' } })
+      });
+    });
+
     await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.setItem('dariGithubPat', 'github_pat_TEST_FAKE_TOKEN');
+    });
 
     await page.locator('.upload-btn').click();
     await expect(page.locator('#adminLoginModal')).toBeVisible();
@@ -80,6 +166,7 @@ test.describe('Landing page regression guards', () => {
     });
 
     await expect(page.locator('#uploadProgressAdmin')).toBeVisible();
+    await expect(page.locator('.toast.success').last()).toContainText('تم حفظ الصورة ونشرها للجميع');
     await expect(page.locator('.gallery-grid .gallery-item')).toHaveCount(9, { timeout: 10000 });
   });
 
@@ -140,5 +227,183 @@ test.describe('Landing page regression guards', () => {
 
     const stored = await page.evaluate(() => localStorage.getItem('dariGithubPat'));
     expect(stored).toBe('github_pat_TEST_FAKE_TOKEN');
+  });
+
+  test('shows gallery delete controls only after admin enables edit mode', async ({ page }) => {
+    await page.goto('/');
+
+    await page.locator('.upload-btn').click();
+    await page.locator('#adminPasswordInput').fill('dari2024');
+    await page.locator('#adminLoginModal button[type="submit"]').click();
+
+    await expect(page.locator('#adminDashboardModal')).toBeVisible();
+    await expect(page.locator('.gallery-delete-btn')).toHaveCount(0);
+
+    await page.locator('.admin-tab[data-tab="upload"]').click();
+    await page.locator('#toggleGalleryEditMode').click();
+
+    await expect(page.locator('.gallery-grid .gallery-delete-btn').first()).toBeVisible();
+  });
+
+  test('does not keep the uploaded image in the gallery when manifest publish fails', async ({ page }) => {
+    await page.goto('/');
+
+    await page.evaluate(() => {
+      localStorage.setItem('dariGithubPat', 'github_pat_TEST_FAKE_TOKEN');
+    });
+
+    await page.route('https://api.github.com/repos/feel5l/dari-hanonah-landing/contents/gallery.json?ref=main', async (route) => {
+      await route.fulfill({
+        status: 401,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Bad credentials' })
+      });
+    });
+
+    await page.locator('.upload-btn').click();
+    await page.locator('#adminPasswordInput').fill('dari2024');
+    await page.locator('#adminLoginModal button[type="submit"]').click();
+    await page.locator('.admin-tab[data-tab="upload"]').click();
+
+    await page.locator('#imageUploadAdmin').setInputFiles({
+      name: 'publish-failure.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9WnQm4sAAAAASUVORK5CYII=',
+        'base64'
+      )
+    });
+
+    await expect(page.locator('.toast.error, .toast.warning')).toContainText('لم يتم نشر الصورة للجميع');
+    await expect(page.locator('.gallery-grid img[alt="publish-failure.png"]')).toHaveCount(0);
+  });
+
+  test('keeps a manifest-backed uploaded image after a full reload', async ({ page }) => {
+    let manifest = {
+      version: 1,
+      updatedAt: '2026-08-02T00:00:00Z',
+      images: [
+        {
+          id: 'default-1',
+          src: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&q=80',
+          alt: 'أطفال في الحضانة',
+          caption: 'أنشطة ترفيهية'
+        }
+      ]
+    };
+
+    await page.route('**/gallery.json?t=*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(manifest)
+      });
+    });
+
+    await page.route('https://api.github.com/repos/feel5l/dari-hanonah-landing/contents/gallery.json?ref=main', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ sha: 'fake-sha' })
+      });
+    });
+
+    await page.route('https://api.github.com/repos/feel5l/dari-hanonah-landing/contents/gallery.json', async (route) => {
+      const payload = JSON.parse(route.request().postData() || '{}');
+      const content = Buffer.from(payload.content, 'base64').toString('utf8');
+      manifest = JSON.parse(content);
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ content: { sha: 'next-sha' } })
+      });
+    });
+
+    await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.setItem('dariGithubPat', 'github_pat_TEST_FAKE_TOKEN');
+    });
+
+    await page.locator('.upload-btn').click();
+    await page.locator('#adminPasswordInput').fill('dari2024');
+    await page.locator('#adminLoginModal button[type="submit"]').click();
+    await page.locator('.admin-tab[data-tab="upload"]').click();
+
+    await page.locator('#imageUploadAdmin').setInputFiles({
+      name: 'persisted-upload.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9WnQm4sAAAAASUVORK5CYII=',
+        'base64'
+      )
+    });
+
+    await expect(page.locator('.toast.success').last()).toContainText('تم حفظ الصورة ونشرها للجميع');
+    await page.reload();
+
+    await expect(page.locator('.gallery-grid img[alt="persisted-upload.png"]')).toBeVisible();
+  });
+
+  test('deletes a manifest-backed gallery image in admin edit mode', async ({ page }) => {
+    let manifest = {
+      version: 1,
+      updatedAt: '2026-08-02T00:00:00Z',
+      images: [
+        {
+          id: 'delete-me',
+          src: 'https://example.com/delete-me.png',
+          alt: 'Delete me',
+          caption: 'Delete me'
+        }
+      ]
+    };
+
+    await page.route('**/gallery.json?t=*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(manifest)
+      });
+    });
+
+    await page.route('https://api.github.com/repos/feel5l/dari-hanonah-landing/contents/gallery.json?ref=main', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ sha: 'delete-sha' })
+      });
+    });
+
+    await page.route('https://api.github.com/repos/feel5l/dari-hanonah-landing/contents/gallery.json', async (route) => {
+      const payload = JSON.parse(route.request().postData() || '{}');
+      const content = Buffer.from(payload.content, 'base64').toString('utf8');
+      manifest = JSON.parse(content);
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ content: { sha: 'delete-next-sha' } })
+      });
+    });
+
+    await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.setItem('dariGithubPat', 'github_pat_TEST_FAKE_TOKEN');
+    });
+
+    await page.locator('.upload-btn').click();
+    await page.locator('#adminPasswordInput').fill('dari2024');
+    await page.locator('#adminLoginModal button[type="submit"]').click();
+    await page.locator('.admin-tab[data-tab="upload"]').click();
+    await page.locator('#toggleGalleryEditMode').click();
+
+    await page.locator('.gallery-grid .gallery-item[data-id="delete-me"] .gallery-delete-btn').click();
+
+    await expect(page.locator('.gallery-grid .gallery-item[data-id="delete-me"]')).toHaveCount(0);
+
+    await page.reload();
+
+    await expect(page.locator('.gallery-grid .gallery-item[data-id="delete-me"]')).toHaveCount(0);
   });
 });

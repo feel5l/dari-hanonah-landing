@@ -2666,61 +2666,285 @@
       }, 1000);
     });
 
-    // Initialize gallery from localStorage on page load
-    document.addEventListener('DOMContentLoaded', function() {
-      loadGalleryFromStorage();
-    });
+    // ===========================================================
+    // 🗂️ GALLERY MANIFEST (centralized, public source of truth)
+    // ===========================================================
+    // Replaces the broken localStorage-only approach. The gallery
+    // list is stored in `gallery.json` at the repo root so every
+    // visitor of the deployed GitHub Pages site sees the same set
+    // of images.
+    //
+    // On page load: fetch gallery.json and render its contents.
+    // On upload/delete: append/remove the entry, then commit the
+    // updated manifest back to the repo via the GitHub Contents
+    // API using a fine-grained Personal Access Token (PAT) that
+    // the admin saves once in the Settings tab.
+    // ===========================================================
 
-    // Save gallery to localStorage
-    function saveGalleryToStorage() {
-      const galleryItems = document.querySelectorAll('.gallery-item img');
-      const images = Array.from(galleryItems).map(img => ({
-        src: img.src,
-        alt: img.alt,
-        caption: img.closest('.gallery-item').querySelector('.gallery-caption')?.textContent || ''
-      }));
-      localStorage.setItem('dariGalleryImages', JSON.stringify(images));
+    const GITHUB_CONFIG = {
+      owner: 'feel5l',
+      repo: 'dari-hanonah-landing',
+      branch: 'main',
+      manifestPath: 'gallery.json'
+    };
+
+    const GITHUB_PAT_KEY = 'dariGithubPat';
+
+    function getStoredGitHubPat() {
+      try {
+        return localStorage.getItem(GITHUB_PAT_KEY) || '';
+      } catch (e) {
+        return '';
+      }
     }
 
-    // Load gallery from localStorage
-    function loadGalleryFromStorage() {
+    function setStoredGitHubPat(pat) {
       try {
-        const savedImages = localStorage.getItem('dariGalleryImages');
-        if (savedImages) {
-          const images = JSON.parse(savedImages);
-          const galleryGrid = document.querySelector('.gallery-grid');
-          
-          // Clear existing custom images first (keep default ones)
-          const existingCustom = galleryGrid.querySelectorAll('.gallery-item.custom');
-          existingCustom.forEach(item => item.remove());
-          
-          // Add saved images
-          images.forEach((imgData, index) => {
-            // Skip if already exists (check by src)
-            const exists = Array.from(galleryGrid.querySelectorAll('.gallery-item img')).some(
-              img => img.src === imgData.src
-            );
-            if (!exists) {
-              const newItem = document.createElement('div');
-              newItem.className = 'gallery-item custom';
-              newItem.innerHTML = `
-                <img src="${imgData.src}" alt="${imgData.alt || 'صورة'}" loading="lazy">
-                <div class="gallery-overlay">
-                  <span class="gallery-caption">${imgData.caption || 'صورة'}</span>
-                </div>
-              `;
-              newItem.onclick = function() { 
-                const allItems = document.querySelectorAll('.gallery-item');
-                const idx = Array.from(allItems).indexOf(newItem);
-                openGalleryModal(idx); 
-              };
-              galleryGrid.appendChild(newItem);
-            }
-          });
+        if (pat) {
+          localStorage.setItem(GITHUB_PAT_KEY, pat);
+        } else {
+          localStorage.removeItem(GITHUB_PAT_KEY);
         }
       } catch (e) {
-        console.log('No saved gallery images');
+        console.error('Failed to store GitHub PAT', e);
       }
+    }
+
+    function isGalleryPersistenceConfigured() {
+      return Boolean(getStoredGitHubPat());
+    }
+
+    // In-memory cache of the current manifest; populated on load
+    // and updated optimistically after each mutation. Exposed on
+    // window for test introspection and external tooling.
+    const galleryManifest = { version: 1, updatedAt: '', images: [] };
+    window.galleryManifest = galleryManifest;
+
+    // Load manifest from the deployed gallery.json (same origin).
+    // Falls back to whatever is in localStorage so the page still
+    // works for visitors when the file fetch fails (e.g. preview
+    // environments that don't serve the JSON).
+    async function loadGalleryManifest() {
+      const fallback = readGalleryManifestFromLocalStorage();
+      try {
+        const response = await fetch(`${GITHUB_CONFIG.manifestPath}?t=${Date.now()}`, {
+          cache: 'no-store',
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!response.ok) {
+          throw new Error(`Manifest HTTP ${response.status}`);
+        }
+        const data = await response.json();
+        if (data && Array.isArray(data.images)) {
+          replaceGalleryManifest(data);
+          saveGalleryManifestToLocalStorage(galleryManifest);
+          return galleryManifest;
+        }
+        throw new Error('Manifest shape invalid');
+      } catch (e) {
+        console.warn('Falling back to cached manifest:', e.message);
+        if (fallback) {
+          replaceGalleryManifest(fallback);
+        } else {
+          // Final fallback: build a manifest from the 8 hardcoded
+          // defaults so the page never shows an empty gallery.
+          replaceGalleryManifest({ version: 1, updatedAt: '', images: collectDefaultImages() });
+        }
+        return galleryManifest;
+      }
+    }
+
+    // Mutate the in-memory + window-visible manifest in place so
+    // references held by tests/tooling stay valid.
+    function replaceGalleryManifest(next) {
+      galleryManifest.version = next.version || 1;
+      galleryManifest.updatedAt = next.updatedAt || '';
+      galleryManifest.images = Array.isArray(next.images) ? next.images.slice() : [];
+    }
+
+    function readGalleryManifestFromLocalStorage() {
+      try {
+        const raw = localStorage.getItem('dariGalleryManifest');
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function saveGalleryManifestToLocalStorage(manifest) {
+      try {
+        localStorage.setItem('dariGalleryManifest', JSON.stringify(manifest));
+      } catch (e) {
+        // Quota or private mode - safe to ignore.
+      }
+    }
+
+    // Read the 8 default images that ship in index.html so we can
+    // still render something if both the manifest and localStorage
+    // are unavailable (cold cache, blocked CDN, etc.).
+    function collectDefaultImages() {
+      const grid = document.querySelector('.gallery-grid');
+      if (!grid) return [];
+      return Array.from(grid.querySelectorAll('.gallery-item:not(.custom)')).map((item) => {
+        const img = item.querySelector('img');
+        const caption = item.querySelector('.gallery-caption');
+        return {
+          id: `default-${Math.random().toString(36).slice(2, 10)}`,
+          src: img ? img.getAttribute('src') : '',
+          alt: img ? (img.getAttribute('alt') || 'صورة') : 'صورة',
+          caption: caption ? caption.textContent.trim() : 'صورة'
+        };
+      });
+    }
+
+    // Replace the visible gallery with the given list of entries.
+    function renderGalleryFromManifest(entries) {
+      const grid = document.querySelector('.gallery-grid');
+      if (!grid) return;
+      // Keep any hardcoded defaults at the top so the page still
+      // shows something meaningful even if the manifest is empty
+      // (e.g. transient network blip). Then add manifest items that
+      // are not already present.
+      const defaults = Array.from(grid.querySelectorAll('.gallery-item:not(.custom)'));
+      const existingSrcs = new Set(defaults.map((d) => d.querySelector('img')?.getAttribute('src')));
+
+      entries.forEach((entry) => {
+        if (!entry || !entry.src || existingSrcs.has(entry.src)) return;
+        appendGalleryItem(entry);
+        existingSrcs.add(entry.src);
+      });
+    }
+
+    // Insert a single manifest entry into the visible grid. Used
+    // both by the initial render and by restore-from-trash.
+    function appendGalleryItem(entry) {
+      const grid = document.querySelector('.gallery-grid');
+      if (!grid) return;
+      const item = document.createElement('div');
+      item.className = 'gallery-item custom';
+      item.dataset.id = entry.id || '';
+      item.innerHTML = `
+        <img src="${entry.src}" alt="${entry.alt || 'صورة'}" loading="lazy">
+        <div class="gallery-overlay">
+          <span class="gallery-caption">${entry.caption || 'صورة'}</span>
+        </div>
+      `;
+      item.onclick = function () {
+        const allItems = document.querySelectorAll('.gallery-item');
+        const index = Array.from(allItems).indexOf(item);
+        if (typeof openGalleryModal === 'function') openGalleryModal(index);
+      };
+      grid.appendChild(item);
+    }
+
+    // Backwards-compatible alias for restoreImage() and any other
+    // legacy callers.
+    function addImageToGallery(entry) {
+      appendGalleryItem(entry);
+    }
+
+    // Push the in-memory manifest to the repo. The PAT must be set
+    // or this call is a no-op (we still keep the in-memory + local
+    // state so the current session works).
+    async function commitGalleryManifestToRepo(manifest, statusMessage) {
+      const pat = getStoredGitHubPat();
+      if (!pat) {
+        console.warn('GitHub PAT missing; manifest not committed to repo.');
+        return { committed: false, reason: 'missing-pat' };
+      }
+      const apiBase = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.manifestPath}`;
+      try {
+        // Fetch the current file's SHA (required for an update).
+        const head = await fetch(`${apiBase}?ref=${encodeURIComponent(GITHUB_CONFIG.branch)}`, {
+          headers: { 'Authorization': `Bearer ${pat}`, 'Accept': 'application/vnd.github+json' }
+        });
+        if (!head.ok) {
+          throw new Error(`GitHub GET HTTP ${head.status}`);
+        }
+        const headData = await head.json();
+        const sha = headData.sha;
+
+        const body = {
+          message: statusMessage || 'chore: update gallery manifest',
+          branch: GITHUB_CONFIG.branch,
+          content: btoa(unescape(encodeURIComponent(JSON.stringify(manifest, null, 2)))),
+          sha
+        };
+
+        const put = await fetch(apiBase, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${pat}`,
+            'Accept': 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+        if (!put.ok) {
+          const errBody = await put.json().catch(() => ({}));
+          throw new Error(errBody.message || `GitHub PUT HTTP ${put.status}`);
+        }
+        return { committed: true };
+      } catch (e) {
+        console.error('Failed to commit gallery manifest:', e);
+        return { committed: false, reason: e.message };
+      }
+    }
+
+    // Initialize gallery from manifest on page load. Replaces the
+    // old localStorage-only loader. The manifest is fetched from
+    // gallery.json (deployed alongside the site) so all visitors
+    // see the same gallery. When the fetch fails (preview envs,
+    // private mode) we fall back to localStorage and finally to
+    // the 8 hardcoded defaults in the HTML.
+    document.addEventListener('DOMContentLoaded', async function () {
+      await loadGalleryManifest();
+      renderGalleryFromManifest(galleryManifest.images);
+    });
+
+    // Persist the given list of manifest entries. Updates the
+    // in-memory cache, local mirror, and (best-effort) commits to
+    // gallery.json in the repo so the change is visible to every
+    // visitor after the next GitHub Pages deploy.
+    async function persistGalleryManifest(entries, statusMessage) {
+      replaceGalleryManifest({
+        version: 1,
+        updatedAt: new Date().toISOString(),
+        images: entries
+      });
+      saveGalleryManifestToLocalStorage(galleryManifest);
+      const result = await commitGalleryManifestToRepo(galleryManifest, statusMessage);
+      if (result.committed) {
+        showToast('تم حفظ المعرض للجميع ✓', 'success');
+      } else if (result.reason && result.reason !== 'missing-pat') {
+        showToast('تم الحفظ محلياً، تعذر النشر للجميع الآن', 'warning');
+      }
+      return result;
+    }
+
+    // Build a manifest entry from a file about to be uploaded.
+    function buildManifestEntryFromFile(file, imageUrl) {
+      return {
+        id: `upload-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        src: imageUrl,
+        alt: file.name,
+        caption: 'صورة جديدة',
+        uploadedAt: new Date().toISOString()
+      };
+    }
+
+    // Append a single image to the manifest and commit.
+    async function appendImageToManifest(entry) {
+      const next = galleryManifest.images.concat([entry]);
+      return persistGalleryManifest(next, `feat(gallery): add ${entry.id}`);
+    }
+
+    // Remove an image (and any trash entry that references it)
+    // from the manifest and commit.
+    async function removeImageFromManifestById(id) {
+      const next = galleryManifest.images.filter((img) => img.id !== id);
+      if (next.length === galleryManifest.images.length) return { committed: false, reason: 'not-found' };
+      return persistGalleryManifest(next, `chore(gallery): remove ${id}`);
     }
 
     async function handleImageUpload(event) {
@@ -2733,6 +2957,7 @@
       const progressFill = document.getElementById(isAdminUpload ? 'progressFillAdmin' : 'progressFill');
       const progressText = document.getElementById(isAdminUpload ? 'progressTextAdmin' : 'progressText');
       const galleryGrid = document.querySelector('.gallery-grid');
+      const newEntries = [];
 
       if (!progressDiv || !progressFill || !progressText || !galleryGrid) {
         console.error('Upload UI elements are missing for the current upload context');
@@ -2818,18 +3043,21 @@
 
           // Add to gallery if we have an image URL
           if (imageUrl) {
+            const entry = buildManifestEntryFromFile(file, imageUrl);
+            newEntries.push(entry);
             const newItem = document.createElement('div');
             newItem.className = 'gallery-item custom';
+            newItem.dataset.id = entry.id;
             newItem.innerHTML = `
               <img src="${imageUrl}" alt="${file.name}" loading="lazy">
               <div class="gallery-overlay">
-                <span class="gallery-caption">صورة جديدة</span>
+                <span class="gallery-caption">${entry.caption}</span>
               </div>
             `;
-            newItem.onclick = function() { 
+            newItem.onclick = function() {
               const allItems = document.querySelectorAll('.gallery-item');
               const index = Array.from(allItems).indexOf(newItem);
-              openGalleryModal(index); 
+              openGalleryModal(index);
             };
             galleryGrid.appendChild(newItem);
           }
@@ -2839,8 +3067,13 @@
         }
       }
 
-      // Save to localStorage
-      saveGalleryToStorage();
+      // Commit the new entries to the manifest so they survive
+      // across browsers/devices. Best-effort: still updates the
+      // DOM and localStorage even when the repo commit fails.
+      if (newEntries.length > 0) {
+        const next = galleryManifest.images.concat(newEntries);
+        await persistGalleryManifest(next, `feat(gallery): add ${newEntries.length} image(s)`);
+      }
 
       progressDiv.style.display = 'none';
       progressFill.style.width = '0%';
@@ -2855,7 +3088,7 @@
       } else {
         closeUploadModal();
       }
-      
+
       // Reset file input
       input.value = '';
     }
@@ -2892,13 +3125,13 @@
     }
     
     // Delete image (move to trash)
-    function deleteImage(imageId) {
+    async function deleteImage(imageId) {
       const galleryGrid = document.querySelector('.gallery-grid');
       const galleryItems = galleryGrid.querySelectorAll('.gallery-item');
-      
+
       let deletedImage = null;
       let itemToRemove = null;
-      
+
       // Find the image
       galleryItems.forEach(item => {
         const img = item.querySelector('img');
@@ -2912,7 +3145,7 @@
           itemToRemove = item;
         }
       });
-      
+
       if (deletedImage && itemToRemove) {
         // Add to trash bin with expiration
         const trashItem = {
@@ -2920,36 +3153,37 @@
           deletedAt: new Date().toISOString(),
           expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
         };
-        
+
         trashBin.push(trashItem);
         saveTrashBinToStorage();
-        
+
         // Remove from DOM
         itemToRemove.remove();
-        
-        // Update gallery storage
-        saveGalleryToStorage();
-        
+
+        // Commit the updated manifest (drops the entry from the
+        // public gallery.json so it disappears for every visitor).
+        await removeImageFromManifestById(imageId);
+
         // Show success message
         showToast('تم نقل الصورة إلى سلة المحذوفات', 'success');
-        
+
         return true;
       }
-      
+
       return false;
     }
-    
+
     // Restore image from trash
-    function restoreImage(imageId) {
+    async function restoreImage(imageId) {
       const trashIndex = trashBin.findIndex(item => item.id === imageId);
-      
+
       if (trashIndex === -1) {
         showToast('الصورة غير موجودة في السلة', 'error');
         return false;
       }
-      
+
       const image = trashBin[trashIndex];
-      
+
       // Create restored image data
       const restoredImage = {
         id: image.id,
@@ -2957,16 +3191,24 @@
         alt: image.alt,
         caption: image.caption
       };
-      
+
       // Add to gallery
       addImageToGallery(restoredImage);
-      
+
       // Remove from trash
       trashBin.splice(trashIndex, 1);
       saveTrashBinToStorage();
-      
+
+      // Re-add to the public manifest so the restored image
+      // reappears for every visitor.
+      const exists = galleryManifest.images.some((img) => img.id === restoredImage.id);
+      if (!exists) {
+        const next = galleryManifest.images.concat([restoredImage]);
+        await persistGalleryManifest(next, `feat(gallery): restore ${restoredImage.id}`);
+      }
+
       showToast('تم استعادة الصورة بنجاح', 'success');
-      
+
       return true;
     }
     
@@ -3993,6 +4235,8 @@
         renderStatsTab();
       } else if (tabName === 'sections') {
         renderSectionSettingsTab();
+      } else if (tabName === 'settings') {
+        renderGitHubSettingsTab();
       }
     }
     
@@ -4296,23 +4540,26 @@
         <button class="admin-tab" data-tab="upload" onclick="switchAdminTab('upload')">
           📤 رفع صور
         </button>
+        <button class="admin-tab" data-tab="settings" onclick="switchAdminTab('settings')">
+          🔑 الإعدادات
+        </button>
       </div>
-      
+
       <!-- Stats Tab -->
       <div id="statsTabContent" class="admin-tab-content active">
         <!-- Stats content will be rendered here -->
       </div>
-      
+
       <!-- Sections Tab -->
       <div id="sectionsTabContent" class="admin-tab-content">
         <!-- Section settings content will be rendered here -->
       </div>
-      
+
       <!-- Trash Bin Tab -->
       <div id="trashBinTabContent" class="admin-tab-content">
         <!-- Trash bin content will be rendered here -->
       </div>
-      
+
       <!-- Upload Tab -->
       <div id="uploadTabContent" class="admin-tab-content">
         <h3 class="admin-section-title">📤 رفع صور جديدة</h3>
@@ -4324,7 +4571,7 @@
             <span class="file-input-text">اختر الصور</span>
           </label>
           <p class="file-hint">يمكنك اختيار عدة صور مرة واحدة</p>
-          
+
           <div id="uploadProgressAdmin" class="upload-progress" style="display: none; margin-top: 1.5rem;">
             <div class="progress-bar">
               <div class="progress-fill" id="progressFillAdmin"></div>
@@ -4332,6 +4579,32 @@
             <p class="progress-text" id="progressTextAdmin">جاري الرفع...</p>
           </div>
         </div>
+      </div>
+
+      <!-- Settings Tab -->
+      <div id="settingsTabContent" class="admin-tab-content">
+        <h3 class="admin-section-title">🔑 حفظ الصور للجميع</h3>
+        <p class="step-description" style="margin-bottom: 1.5rem;">
+          لحفظ صور المعرض بشكل دائم ومشترك بين كل الزوار، يلزم ربط حسابك على GitHub بمفتاح API خاص.
+          المفتاح يُحفظ محلياً في متصفحك فقط ولا يُرسل لأي جهة.
+        </p>
+        <div id="githubPatStatus" style="margin-bottom: 1rem; padding: 0.75rem 1rem; border-radius: 8px; background: #fef3c7; color: #92400e; font-weight: 600;">
+          ⏳ جاري التحقق من الإعدادات...
+        </div>
+        <form id="githubPatForm" onsubmit="saveGitHubPat(event)" style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <label for="githubPatInput" style="font-weight: 600;">GitHub Personal Access Token</label>
+          <input type="password" id="githubPatInput" autocomplete="off" placeholder="github_pat_..." style="padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 8px; font-family: monospace; font-size: 0.95rem;">
+          <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
+            أنشئ مفتاحاً من
+            <a href="https://github.com/settings/personal-access-tokens/new?type=beta" target="_blank" rel="noopener" style="color: var(--primary);">إعدادات GitHub</a>
+            بصلاحية <strong>Contents: Read and write</strong> على مستودع
+            <code id="githubRepoLabel">feel5l/dari-hanonah-landing</code> فقط.
+          </p>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+            <button type="submit" class="btn btn-primary" style="flex: 1; background: var(--primary); color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">💾 حفظ المفتاح</button>
+            <button type="button" class="btn btn-danger" style="flex: 1; background: #ef4444; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;" onclick="clearGitHubPat()">🗑️ حذف المفتاح</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -4352,7 +4625,56 @@
       if (document.getElementById('trashBinTabContent')) {
         renderTrashBinTab();
       }
+      if (document.getElementById('settingsTabContent')) {
+        renderGitHubSettingsTab();
+      }
     });
+
+    // Render the GitHub PAT status block (configured / not configured).
+    function renderGitHubSettingsTab() {
+      const status = document.getElementById('githubPatStatus');
+      const input = document.getElementById('githubPatInput');
+      if (!status) return;
+      const configured = isGalleryPersistenceConfigured();
+      if (configured) {
+        status.style.background = '#d1fae5';
+        status.style.color = '#065f46';
+        status.textContent = '✅ المفتاح محفوظ. الصور ستُحفظ للجميع تلقائياً.';
+        if (input) input.value = '';
+      } else {
+        status.style.background = '#fef3c7';
+        status.style.color = '#92400e';
+        status.textContent = '⚠️ لا يوجد مفتاح. الصور ستظهر في هذا المتصفح فقط ولن تظهر للزوار الآخرين.';
+      }
+    }
+
+    // Save the GitHub PAT to localStorage (admin only).
+    function saveGitHubPat(event) {
+      if (event) event.preventDefault();
+      const input = document.getElementById('githubPatInput');
+      if (!input) return;
+      const value = input.value.trim();
+      if (!value) {
+        showToast('الرجاء إدخال المفتاح', 'error');
+        return;
+      }
+      if (!value.startsWith('github_pat_') && !value.startsWith('ghp_') && !value.startsWith('ghs_')) {
+        showToast('صيغة المفتاح غير صحيحة. المفاتيح الحديثة تبدأ بـ github_pat_', 'error');
+        return;
+      }
+      setStoredGitHubPat(value);
+      input.value = '';
+      renderGitHubSettingsTab();
+      showToast('تم حفظ المفتاح بنجاح', 'success');
+    }
+
+    // Clear the stored GitHub PAT.
+    function clearGitHubPat() {
+      if (!confirm('هل أنت متأكد من حذف المفتاح؟ لن تُحفظ الصور للزوار بعد ذلك.')) return;
+      setStoredGitHubPat('');
+      renderGitHubSettingsTab();
+      showToast('تم حذف المفتاح', 'info');
+    }
   </script>
 </body>
 </html>

@@ -3,9 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="مركز داري الحنونة الأهلية لضيافة الأطفال في الهفوف: حضانة وروضة من عمر 45 يومًا حتى 6 سنوات مع برنامج قرآني وتعليمي متكامل وتواصل سريع عبر واتساب." />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta property="og:locale" content="ar_SA" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="داري الحنونة | حضانة وروضة في الهفوف" />
+  <meta property="og:description" content="احجزي استشارة مجانية أو زيارة للمركز عبر واتساب، وتعرّفي على برامج الحضانة والتمهيدي في بيئة آمنة ومحفزة لطفلك." />
+  <meta property="og:url" content="https://feel5l.github.io/dari-hanonah-landing/" />
+  <meta property="og:image" content="https://feel5l.github.io/dari-hanonah-landing/assets/gallery/classroom.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="داري الحنونة | حضانة وروضة في الهفوف" />
+  <meta name="twitter:description" content="برامج تأسيسية متكاملة مع تواصل يومي عبر واتساب. احجزي الآن مقعد طفلك أو زيارة تعريفية." />
+  <meta name="twitter:image" content="https://feel5l.github.io/dari-hanonah-landing/assets/gallery/classroom.svg" />
+  <meta name="theme-color" content="#0f766e" />
+  <link rel="canonical" href="https://feel5l.github.io/dari-hanonah-landing/" />
   <title>مركز داري الحنونة الأهلية لضيافة الأطفال</title>
   <style>
-    body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#f8fafc; color:#0f172a; }
+    body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#f8fafc; color:#0f172a; line-height:1.6; }
     * { box-sizing: border-box; }
     a { text-decoration: none; }
     .container { width:100%; max-width:1100px; margin:0 auto; padding:0 1.25rem; }
@@ -16,7 +30,7 @@
     header.hero { background:linear-gradient(135deg,#0f766e,#14b8a6); color:white; padding:2.5rem 0 2.75rem; }
     .hero-grid { display:grid; grid-template-columns:1.2fr 1fr; gap:2rem; align-items:center; }
     @media (max-width: 850px) { .hero-grid { grid-template-columns:1fr; } }
-    .hero-title { font-size:2.2rem; margin:0 0 1rem; line-height:1.4; }
+    .hero-title { font-size:clamp(1.7rem, 4vw, 2.3rem); margin:0 0 1rem; line-height:1.45; }
     .hero-sub { font-size:1rem; line-height:1.8; margin-bottom:1.2rem; }
     .hero-badges { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.4rem; }
     .badge { background:rgba(15,23,42,0.18); padding:0.25rem 0.65rem; border-radius:999px; font-size:0.82rem; }
@@ -25,6 +39,12 @@
     .btn-secondary { background:transparent; color:#ecfeff; padding:0.65rem 1.1rem; border-radius:999px; border:1px solid rgba(240,253,250,0.7); font-weight:500; cursor:pointer; font-size:0.9rem; }
     .btn-primary, .btn-secondary { display:inline-flex; align-items:center; justify-content:center; text-align:center; }
     .btn-link { line-height:1.4; }
+    .btn-primary:hover, .btn-primary:focus-visible { background:#ea580c; }
+    .btn-secondary:hover, .btn-secondary:focus-visible { background:rgba(255,255,255,0.12); }
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline:3px solid #f97316;
+      outline-offset:2px;
+    }
 
     .lead-box { background:#ecfeff; color:#0f172a; padding:1rem 1rem 1.2rem; border-radius:0.9rem; box-shadow:0 18px 40px rgba(15,23,42,0.32); }
     .lead-box h3 { margin-top:0; margin-bottom:0.8rem; font-size:1.05rem; }
@@ -81,6 +101,7 @@
     @media (max-width:800px) { .footer-grid { grid-template-columns:1fr; } }
     .footer-actions { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.4rem; }
     .footer-actions a { border-radius:999px; border:1px solid #4b5563; padding:0.35rem 0.7rem; color:#e5e7eb; font-size:0.78rem; }
+    .footer-actions a:hover, .footer-actions a:focus-visible { border-color:#94a3b8; color:#fff; }
   </style>
 </head>
 <body>
@@ -109,7 +130,7 @@
           <a class="btn-primary btn-link" href="#visit-form">احجزي زيارة للمركز الآن</a>
           <a class="btn-secondary btn-link" href="https://wa.me/966546425459" target="_blank" rel="noopener">راسلينا على واتساب</a>
         </div>
-        <p class="hint">املئي النموذج أو أرسلي لنا على الواتساب، وسيتواصل معك فريق داري الحنونة خلال أقرب وقت.</p>
+        <p class="hint">املئي النموذج أو راسلينا مباشرة عبر واتساب، وسيتواصل معك فريق داري الحنونة خلال يوم عمل واحد.</p>
       </div>
       <div>
         <div class="lead-box" id="lead-form">
@@ -241,27 +262,27 @@
       </p>
       <div class="gallery-grid">
         <figure class="gallery-item">
-          <img src="assets/gallery/outdoor-yard.svg" alt="الساحة الخارجية المجهزة للأنشطة" loading="lazy" />
+          <img src="assets/gallery/outdoor-yard.svg" alt="الساحة الخارجية المجهزة للأنشطة" loading="lazy" decoding="async" width="960" height="640" />
           <figcaption>الساحة الخارجية المجهزة للأنشطة الحركية اليومية.</figcaption>
         </figure>
         <figure class="gallery-item">
-          <img src="assets/gallery/classroom.svg" alt="فصل تعليمي منظم بإضاءة مناسبة" loading="lazy" />
+          <img src="assets/gallery/classroom.svg" alt="فصل تعليمي منظم بإضاءة مناسبة" loading="lazy" decoding="async" width="960" height="640" />
           <figcaption>فصل تعليمي منظم يساعد الطفل على التركيز والتفاعل.</figcaption>
         </figure>
         <figure class="gallery-item">
-          <img src="assets/gallery/play-area.svg" alt="منطقة لعب آمنة للأطفال" loading="lazy" />
+          <img src="assets/gallery/play-area.svg" alt="منطقة لعب آمنة للأطفال" loading="lazy" decoding="async" width="960" height="640" />
           <figcaption>منطقة لعب آمنة لتنمية المهارات الاجتماعية والحركية.</figcaption>
         </figure>
         <figure class="gallery-item">
-          <img src="assets/gallery/reading-corner.svg" alt="ركن قراءة وقصص للأطفال" loading="lazy" />
+          <img src="assets/gallery/reading-corner.svg" alt="ركن قراءة وقصص للأطفال" loading="lazy" decoding="async" width="960" height="640" />
           <figcaption>ركن القراءة والقصص لبناء حب التعلم واللغة.</figcaption>
         </figure>
         <figure class="gallery-item">
-          <img src="assets/gallery/storage-lockers.svg" alt="خزائن مخصصة للأطفال" loading="lazy" />
+          <img src="assets/gallery/storage-lockers.svg" alt="خزائن مخصصة للأطفال" loading="lazy" decoding="async" width="960" height="640" />
           <figcaption>خزائن مخصصة لكل طفل لتنظيم مقتنياته اليومية.</figcaption>
         </figure>
         <figure class="gallery-item">
-          <img src="assets/gallery/activity-event.svg" alt="فعالية تعليمية ترفيهية داخل المركز" loading="lazy" />
+          <img src="assets/gallery/activity-event.svg" alt="فعالية تعليمية ترفيهية داخل المركز" loading="lazy" decoding="async" width="960" height="640" />
           <figcaption>فعاليات تعليمية وترفيهية تعزز الثقة وروح المشاركة.</figcaption>
         </figure>
       </div>
@@ -364,6 +385,9 @@
             <option value="واتساب">واتساب</option>
           </select>
 
+          <label for="phone-2">رقم الجوال</label>
+          <input id="phone-2" name="phone" type="tel" placeholder="05xxxxxxxx" inputmode="numeric" pattern="05[0-9]{8}" required />
+
           <label for="message">رسالتك لنا</label>
           <textarea id="message" name="message" placeholder="اكتبي أي تفاصيل عن طفلك أو استفسارات حول البرامج أو الأوقات"></textarea>
 
@@ -373,6 +397,7 @@
           </div>
 
           <button type="submit" class="btn-primary" style="width:100%;">إرسال الطلب عبر واتساب</button>
+          <p class="hint" style="color:#cbd5f5;">بعد الضغط على الإرسال، سيتم فتح رسالة جاهزة في واتساب لإتمام الطلب.</p>
           <p class="form-status" id="visit-status" aria-live="polite"></p>
         </form>
       </div>
@@ -389,11 +414,11 @@
       <div>
         <div>تواصلي معنا:</div>
         <div class="footer-actions">
-          <a href="https://wa.me/966546425459" target="_blank" rel="noopener">واتساب</a>
-          <a href="tel:+966546425459">اتصال هاتفي</a>
-          <a href="https://www.instagram.com/dari_alhanonah/" target="_blank" rel="noopener">إنستغرام</a>
-          <a href="https://www.tiktok.com/@dari_alhanonah" target="_blank" rel="noopener">تيك توك</a>
-          <a href="https://www.youtube.com/@n0i0a0m0o" target="_blank" rel="noopener">يوتيوب</a>
+          <a href="https://wa.me/966546425459" target="_blank" rel="noopener" aria-label="تواصل عبر واتساب">💬 واتساب</a>
+          <a href="tel:+966546425459" aria-label="اتصال هاتفي">📞 اتصال هاتفي</a>
+          <a href="https://www.instagram.com/dari_alhanonah/" target="_blank" rel="noopener" aria-label="إنستغرام">📷 إنستغرام</a>
+          <a href="https://www.tiktok.com/@dari_alhanonah" target="_blank" rel="noopener" aria-label="تيك توك">🎵 تيك توك</a>
+          <a href="https://www.youtube.com/@n0i0a0m0o" target="_blank" rel="noopener" aria-label="يوتيوب">▶️ يوتيوب</a>
         </div>
       </div>
     </div>
@@ -459,14 +484,23 @@
       const visitStatus = document.getElementById("visit-status");
       visitForm.addEventListener("submit", (event) => {
         event.preventDefault();
+        const phoneValue = visitForm.phone.value.trim();
         if (!visitForm.reportValidity()) {
           setStatus(visitStatus, "الرجاء تعبئة الحقول المطلوبة والموافقة على سياسة التواصل.", false);
+          return;
+        }
+        if (!validSaudiMobile(phoneValue)) {
+          visitForm.phone.setCustomValidity("أدخلي رقم جوال سعودي بصيغة 05xxxxxxxx");
+          visitForm.reportValidity();
+          visitForm.phone.setCustomValidity("");
+          setStatus(visitStatus, "تحققي من رقم الجوال وأعيدي المحاولة.", false);
           return;
         }
 
         const message = [
           "طلب زيارة/حجز مقعد جديد من صفحة داري الحنونة",
           `اسم الأم: ${visitForm.mother_name.value.trim()}`,
+          `رقم الجوال: ${normalizePhone(phoneValue)}`,
           `اسم الطفل: ${visitForm.child_name.value.trim() || "غير مذكور"}`,
           `عمر الطفل: ${visitForm.child_age.value}`,
           `الخدمة المطلوبة: ${visitForm.service.value}`,
@@ -479,6 +513,26 @@
         setStatus(visitStatus, "تم تجهيز رسالتك على واتساب، الرجاء الضغط على إرسال داخل واتساب لإتمام الطلب.", true);
       });
     })();
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ChildCare",
+      "name": "مركز داري الحنونة الأهلية لضيافة الأطفال",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "الهفوف",
+        "addressRegion": "الأحساء",
+        "addressCountry": "SA"
+      },
+      "telephone": "+966546425459",
+      "url": "https://feel5l.github.io/dari-hanonah-landing/",
+      "sameAs": [
+        "https://www.instagram.com/dari_alhanonah/",
+        "https://www.tiktok.com/@dari_alhanonah",
+        "https://www.youtube.com/@n0i0a0m0o"
+      ]
+    }
   </script>
 </body>
 </html>

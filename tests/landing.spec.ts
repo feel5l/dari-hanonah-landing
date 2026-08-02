@@ -219,6 +219,88 @@ test.describe('Landing page regression guards', () => {
     await expect(page.locator('.gallery-grid .gallery-delete-btn')).toHaveCount(0);
   });
 
+  test('shows worker service status when a Cloudflare Worker endpoint is configured', async ({ page }) => {
+    await page.route('https://worker.example/api/health', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ ok: true, mode: 'worker', configured: true })
+      });
+    });
+
+    await page.route('https://worker.example/api/auth/login', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ ok: true, token: 'dariws_worker-token' })
+      });
+    });
+
+    await page.goto('/');
+    await page.evaluate(() => localStorage.setItem('dariWorkerApiBase', 'https://worker.example'));
+    await page.locator('.upload-btn').click();
+    await page.locator('#adminPasswordInput').fill('dari2024');
+    await page.locator('#adminLoginModal button[type="submit"]').click();
+    await page.locator('.admin-tab[data-tab="settings"]').click();
+
+    await expect(page.locator('#githubPatStatus')).toContainText('Worker');
+  });
+
+  test('deletes a gallery image through the configured worker endpoint without a GitHub PAT', async ({ page }) => {
+    let manifest = {
+      version: 1,
+      updatedAt: '2026-08-02T00:00:00Z',
+      images: [
+        { id: 'worker-delete-a', src: 'https://example.com/worker-delete-a.png', alt: 'worker-delete-a', caption: 'worker-delete-a' }
+      ]
+    };
+
+    await page.route('**/gallery.json?t=*', async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(manifest) });
+    });
+
+    await page.route('https://worker.example/api/health', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ ok: true, mode: 'worker', configured: true })
+      });
+    });
+
+    await page.route('https://worker.example/api/auth/login', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ ok: true, token: 'dariws_worker-token' })
+      });
+    });
+
+    await page.route('https://worker.example/api/gallery/manifest', async (route) => {
+      const payload = JSON.parse(route.request().postData() || '{}');
+      manifest = {
+        version: 1,
+        updatedAt: '2026-08-02T00:00:00Z',
+        images: payload.images || []
+      };
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ ok: true, manifest })
+      });
+    });
+
+    await page.goto('/');
+    await page.evaluate(() => localStorage.setItem('dariWorkerApiBase', 'https://worker.example'));
+    await page.locator('.upload-btn').click();
+    await page.locator('#adminPasswordInput').fill('dari2024');
+    await page.locator('#adminLoginModal button[type="submit"]').click();
+    await page.locator('.admin-tab[data-tab="upload"]').click();
+    await page.locator('#toggleGalleryEditMode').click();
+    await page.locator('[data-testid="single-delete-button"][data-image-id="worker-delete-a"]').click();
+
+    await expect(page.locator('.gallery-grid img[data-id="worker-delete-a"]')).toHaveCount(0);
+  });
+
   test('shows gallery delete controls only after admin enables edit mode', async ({ page }) => {
     let manifest = {
       version: 1,

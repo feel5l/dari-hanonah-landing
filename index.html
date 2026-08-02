@@ -2695,6 +2695,9 @@
     };
 
     const GITHUB_PAT_KEY = 'dariGithubPat';
+    const WORKER_API_BASE_KEY = 'dariWorkerApiBase';
+    const WORKER_SESSION_KEY = 'dariWorkerSessionToken';
+    const DEFAULT_WORKER_API_BASE = '';
 
     function getStoredGitHubPat() {
       try {
@@ -2718,8 +2721,40 @@
       }
     }
 
+    function getStoredWorkerApiBase() {
+      try {
+        return localStorage.getItem(WORKER_API_BASE_KEY) || DEFAULT_WORKER_API_BASE || '';
+      } catch (e) {
+        return DEFAULT_WORKER_API_BASE || '';
+      }
+    }
+
+    function getStoredWorkerSession() {
+      try {
+        return localStorage.getItem(WORKER_SESSION_KEY) || '';
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function setStoredWorkerSession(token) {
+      try {
+        if (token) {
+          localStorage.setItem(WORKER_SESSION_KEY, token);
+        } else {
+          localStorage.removeItem(WORKER_SESSION_KEY);
+        }
+      } catch (e) {
+        console.error('Failed to store worker session token', e);
+      }
+    }
+
+    function isWorkerModeEnabled() {
+      return Boolean(getStoredWorkerApiBase());
+    }
+
     function isGalleryPersistenceConfigured() {
-      return Boolean(getStoredGitHubPat());
+      return isWorkerModeEnabled() || Boolean(getStoredGitHubPat());
     }
 
     let githubPatValidationState = {
@@ -2737,6 +2772,148 @@
         lastError
       };
       return githubPatValidationState;
+    }
+
+    let workerServiceValidationState = {
+      status: isWorkerModeEnabled() ? 'unknown' : 'missing',
+      message: '',
+      checkedAt: '',
+      lastError: ''
+    };
+
+    function setWorkerServiceValidationState(status, message = '', lastError = '') {
+      workerServiceValidationState = {
+        status,
+        message,
+        checkedAt: new Date().toISOString(),
+        lastError
+      };
+      return workerServiceValidationState;
+    }
+
+    async function callWorkerApi(path, options = {}) {
+      const baseUrl = getStoredWorkerApiBase();
+      if (!baseUrl) {
+        throw new Error('worker-api-base-missing');
+      }
+
+      const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+      const url = `${baseUrl}${normalizedPath}`;
+      const headers = new Headers(options.headers || {});
+      const sessionToken = getStoredWorkerSession();
+
+      if (sessionToken && !headers.has('Authorization')) {
+        headers.set('Authorization', `Bearer ${sessionToken}`);
+      }
+
+      if (options.body && !headers.has('Content-Type')) {
+        headers.set('Content-Type', 'application/json');
+      }
+
+      return fetch(url, {
+        ...options,
+        headers
+      });
+    }
+
+    function getWorkerValidationDisplayState() {
+      switch (workerServiceValidationState.status) {
+        case 'valid':
+          return {
+            background: '#d1fae5',
+            color: '#065f46',
+            text: workerServiceValidationState.message || '✅ Cloudflare Worker متصل وجاهز لخدمات المعرض.'
+          };
+        case 'checking':
+          return {
+            background: '#dbeafe',
+            color: '#1d4ed8',
+            text: workerServiceValidationState.message || '⏳ جاري التحقق من Cloudflare Worker...'
+          };
+        case 'invalid':
+          return {
+            background: '#fee2e2',
+            color: '#991b1b',
+            text: workerServiceValidationState.message || '❌ إعداد Cloudflare Worker غير صالح.'
+          };
+        case 'error':
+          return {
+            background: '#fee2e2',
+            color: '#991b1b',
+            text: workerServiceValidationState.message || '⚠️ تعذر الاتصال بـ Cloudflare Worker حالياً.'
+          };
+        case 'missing':
+        default:
+          return {
+            background: '#fef3c7',
+            color: '#92400e',
+            text: '⚠️ لم يتم ضبط عنوان Cloudflare Worker بعد. سيستمر المسار الاحتياطي الحالي فقط.'
+          };
+      }
+    }
+
+    async function validateWorkerService() {
+      if (!isWorkerModeEnabled()) {
+        return {
+          valid: false,
+          ...setWorkerServiceValidationState('missing')
+        };
+      }
+
+      setWorkerServiceValidationState('checking', '⏳ جاري التحقق من Cloudflare Worker...');
+      renderGitHubSettingsTab();
+
+      try {
+        const response = await callWorkerApi('/api/health', {
+          method: 'GET'
+        });
+        const payload = await response.json().catch(() => ({}));
+
+        if (!response.ok || !payload.ok || payload.configured !== true) {
+          return {
+            valid: false,
+            ...setWorkerServiceValidationState(
+              response.ok ? 'invalid' : 'error',
+              '❌ Cloudflare Worker لا يعلن عن نفسه كخدمة جاهزة.'
+            )
+          };
+        }
+
+        return {
+          valid: true,
+          ...setWorkerServiceValidationState('valid', '✅ Cloudflare Worker متصل وجاهز لخدمات المعرض.')
+        };
+      } catch (error) {
+        return {
+          valid: false,
+          ...setWorkerServiceValidationState(
+            'error',
+            '⚠️ تعذر الاتصال بـ Cloudflare Worker حالياً.',
+            error.message || 'worker-network-error'
+          )
+        };
+      }
+    }
+
+    async function loginWithWorker(password) {
+      const response = await callWorkerApi('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ password })
+      });
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok || !payload.ok || !payload.token) {
+        setStoredWorkerSession('');
+        return {
+          ok: false,
+          message: payload.error === 'invalid-credentials'
+            ? 'كلمة المرور غير صحيحة'
+            : 'تعذر تسجيل الدخول عبر Cloudflare Worker'
+        };
+      }
+
+      setStoredWorkerSession(payload.token);
+      return { ok: true };
     }
 
     function getGitHubValidationDisplayState() {
@@ -2842,7 +3019,41 @@
       }
     }
 
+    async function validateGalleryPersistenceService() {
+      if (isWorkerModeEnabled()) {
+        return validateWorkerService();
+      }
+      return validateGitHubPat();
+    }
+
     async function ensureGalleryPublishingReady(actionLabel) {
+      if (isWorkerModeEnabled()) {
+        const sessionToken = getStoredWorkerSession();
+        if (!sessionToken) {
+          setWorkerServiceValidationState('invalid', '❌ لا توجد جلسة إدارة صالحة لـ Cloudflare Worker.');
+          renderGitHubSettingsTab();
+          if (typeof switchAdminTab === 'function' && isAdminLoggedIn) {
+            switchAdminTab('settings');
+          }
+          showToast(`لا يمكن ${actionLabel} قبل تسجيل الدخول عبر Cloudflare Worker.`, 'error');
+          return false;
+        }
+
+        let validation = workerServiceValidationState;
+        if (validation.status !== 'valid') {
+          validation = await validateWorkerService();
+        }
+
+        renderGitHubSettingsTab();
+        if (validation.valid || validation.status === 'valid') return true;
+
+        if (typeof switchAdminTab === 'function' && isAdminLoggedIn) {
+          switchAdminTab('settings');
+        }
+        showToast(validation.message || `تعذر ${actionLabel} لأن Cloudflare Worker غير جاهز حالياً.`, 'error');
+        return false;
+      }
+
       const pat = getStoredGitHubPat();
       if (!pat) {
         setGitHubPatValidationState('missing');
@@ -3150,6 +3361,48 @@
     // gallery.json in the repo so the change is visible to every
     // visitor after the next GitHub Pages deploy.
     async function persistGalleryManifest(entries, statusMessage) {
+      if (isWorkerModeEnabled()) {
+        replaceGalleryManifest({
+          version: 1,
+          updatedAt: new Date().toISOString(),
+          images: entries
+        });
+        saveGalleryManifestToLocalStorage(galleryManifest);
+
+        try {
+          const response = await callWorkerApi('/api/gallery/manifest', {
+            method: 'POST',
+            body: JSON.stringify({
+              images: entries,
+              message: statusMessage || 'chore(gallery): update via worker'
+            })
+          });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok || !payload.ok) {
+            return {
+              committed: false,
+              published: false,
+              reason: payload.error || `worker-http-${response.status}`
+            };
+          }
+
+          if (payload.manifest && Array.isArray(payload.manifest.images)) {
+            replaceGalleryManifest(payload.manifest);
+            saveGalleryManifestToLocalStorage(galleryManifest);
+          }
+
+          setWorkerServiceValidationState('valid', '✅ Cloudflare Worker متصل وجاهز لخدمات المعرض.');
+          return { committed: true, published: true };
+        } catch (error) {
+          setWorkerServiceValidationState('error', '⚠️ تعذر الاتصال بـ Cloudflare Worker أثناء حفظ المعرض.', error.message || 'worker-save-failed');
+          return {
+            committed: false,
+            published: false,
+            reason: error.message || 'worker-save-failed'
+          };
+        }
+      }
+
       replaceGalleryManifest({
         version: 1,
         updatedAt: new Date().toISOString(),
@@ -3751,14 +4004,30 @@
     }
     
     // Admin login
-    function adminLogin() {
+    async function adminLogin() {
       const passwordInput = document.getElementById('adminPasswordInput');
       const errorDiv = document.getElementById('adminLoginError');
       
       if (!passwordInput) return;
       
       const password = passwordInput.value;
-      
+
+      if (isWorkerModeEnabled()) {
+        const workerLogin = await loginWithWorker(password);
+        if (workerLogin.ok) {
+          isAdminLoggedIn = true;
+          errorDiv.style.display = 'none';
+          passwordInput.value = '';
+          showAdminPanel();
+          showToast('تم تسجيل الدخول بنجاح عبر Cloudflare Worker', 'success');
+          return;
+        }
+
+        errorDiv.textContent = workerLogin.message || 'تعذر تسجيل الدخول';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
       if (password === ADMIN_PASSWORD) {
         isAdminLoggedIn = true;
         errorDiv.style.display = 'none';
@@ -3778,6 +4047,7 @@
       isAdminLoggedIn = false;
       isGalleryEditMode = false;
       selectedImageIds.clear();
+      setStoredWorkerSession('');
       syncGalleryEditMode();
       hideAdminPanel();
       showToast('تم تسجيل الخروج', 'info');
@@ -3807,7 +4077,7 @@
       renderStatsTab();
       renderSectionSettingsTab();
       renderTrashBinTab();
-      renderGitHubSettingsTab();
+        renderGitHubSettingsTab();
     }
     
     // ===========================================
@@ -4608,8 +4878,9 @@
         syncGalleryEditMode();
       } else if (tabName === 'settings') {
         renderGitHubSettingsTab();
-        if (isGalleryPersistenceConfigured() && githubPatValidationState.status !== 'checking') {
-          validateGitHubPat();
+        const activeState = isWorkerModeEnabled() ? workerServiceValidationState : githubPatValidationState;
+        if (isGalleryPersistenceConfigured() && activeState.status !== 'checking') {
+          validateGalleryPersistenceService();
         }
       }
     }
@@ -4619,9 +4890,9 @@
     // ===========================================
     
     // Handle login form submission
-    function handleAdminLogin(event) {
+    async function handleAdminLogin(event) {
       event.preventDefault();
-      adminLogin();
+      await adminLogin();
     }
 
     async function toggleGalleryEditMode() {
@@ -5051,17 +5322,27 @@
     function renderGitHubSettingsTab() {
       const status = document.getElementById('githubPatStatus');
       const input = document.getElementById('githubPatInput');
+      const form = document.getElementById('githubPatForm');
+      const clearButton = document.querySelector('#settingsTabContent button[onclick="clearGitHubPat()"]');
       if (!status) return;
-      const displayState = getGitHubValidationDisplayState();
+      const displayState = isWorkerModeEnabled()
+        ? getWorkerValidationDisplayState()
+        : getGitHubValidationDisplayState();
       status.style.background = displayState.background;
       status.style.color = displayState.color;
       status.textContent = displayState.text;
+      if (form) form.style.display = isWorkerModeEnabled() ? 'none' : 'flex';
+      if (clearButton) clearButton.style.display = isWorkerModeEnabled() ? 'none' : 'inline-flex';
       if (input && githubPatValidationState.status === 'valid') input.value = '';
     }
 
     // Save the GitHub PAT to localStorage (admin only).
     async function saveGitHubPat(event) {
       if (event) event.preventDefault();
+      if (isWorkerModeEnabled()) {
+        showToast('وضع Cloudflare Worker لا يحتاج إلى مفتاح GitHub داخل المتصفح', 'info');
+        return;
+      }
       const input = document.getElementById('githubPatInput');
       if (!input) return;
       const value = input.value.trim();
@@ -5088,6 +5369,13 @@
 
     // Clear the stored GitHub PAT.
     function clearGitHubPat() {
+      if (isWorkerModeEnabled()) {
+        setStoredWorkerSession('');
+        setWorkerServiceValidationState('unknown', '⏳ تم مسح جلسة Worker الحالية.');
+        renderGitHubSettingsTab();
+        showToast('تم مسح جلسة Cloudflare Worker', 'info');
+        return;
+      }
       if (!confirm('هل أنت متأكد من حذف المفتاح؟ لن تُحفظ الصور للزوار بعد ذلك.')) return;
       setStoredGitHubPat('');
       setGitHubPatValidationState('missing');

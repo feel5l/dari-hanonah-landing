@@ -1,0 +1,9 @@
+name = "dari-hanonah-gallery"
+main = "worker.mjs"
+compatibility_date = "2026-08-02"
+
+[vars]
+GITHUB_OWNER = "feel5l"
+GITHUB_REPO = "dari-hanonah-landing"
+GITHUB_BRANCH = "main"
+GALLERY_MANIFEST_PATH = "gallery.json"

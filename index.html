@@ -2241,6 +2241,14 @@
           </svg>
           إضافة صور جديدة
         </button>
+        <div id="galleryEditToolbar" class="gallery-edit-toolbar" style="display: none;">
+          <button id="toggleGalleryEditModeButton" type="button" class="btn btn-secondary" data-testid="toggle-edit-mode-button" onclick="toggleGalleryEditMode()">
+            وضع التحرير
+          </button>
+          <button id="bulkDeleteGalleryButton" type="button" class="btn btn-danger" data-testid="bulk-delete-button" onclick="deleteSelectedImages()" disabled>
+            حذف المحدد
+          </button>
+        </div>
       </div>
       <div class="gallery-grid">
         <div class="gallery-item" onclick="openGalleryModal(0)">
@@ -2718,6 +2726,7 @@
     const galleryManifest = { version: 1, updatedAt: '', images: [] };
     let defaultGalleryEntries = [];
     let isGalleryEditMode = false;
+    let selectedImageIds = new Set();
     window.galleryManifest = galleryManifest;
 
     async function fetchPublishedGalleryManifest() {
@@ -2819,6 +2828,45 @@
       });
     }
 
+    function toggleImageSelection(imageId) {
+      if (!isAdminLoggedIn || !isGalleryEditMode || !imageId) return;
+
+      if (selectedImageIds.has(imageId)) {
+        selectedImageIds.delete(imageId);
+      } else {
+        selectedImageIds.add(imageId);
+      }
+
+      syncGalleryEditMode();
+    }
+
+    async function deleteSelectedImages() {
+      const imageIds = Array.from(selectedImageIds);
+      if (imageIds.length === 0) {
+        showToast('لم يتم تحديد أي صور', 'info');
+        return false;
+      }
+
+      let deletedCount = 0;
+      for (const imageId of imageIds) {
+        const deleted = await deleteImage(imageId, { skipRender: true, silent: true });
+        if (deleted) deletedCount += 1;
+      }
+
+      selectedImageIds.clear();
+      renderTrashBinTab();
+      renderStatsTab();
+      syncGalleryEditMode();
+
+      if (deletedCount > 0) {
+        showToast(`تم نقل ${deletedCount} صورة إلى سلة المحذوفات`, 'success');
+        return true;
+      }
+
+      showToast('تعذر حذف الصور المحددة', 'error');
+      return false;
+    }
+
     // Insert a single manifest entry into the visible grid. Used
     // both by the initial render and by restore-from-trash.
     function appendGalleryItem(entry) {
@@ -2828,7 +2876,7 @@
       item.className = 'gallery-item custom';
       item.dataset.id = entry.id || '';
       item.innerHTML = `
-        <img src="${entry.src}" alt="${entry.alt || 'صورة'}" loading="lazy">
+        <img data-id="${entry.id || ''}" src="${entry.src}" alt="${entry.alt || 'صورة'}" loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-caption">${entry.caption || 'صورة'}</span>
         </div>
@@ -2836,8 +2884,12 @@
       if (isAdminLoggedIn && isGalleryEditMode && entry.id) {
         injectDeleteButton(item, entry.id);
       }
-      item.onclick = function () {
-        if (isGalleryEditMode) return;
+      item.onclick = function (event) {
+        if (isAdminLoggedIn && isGalleryEditMode && entry.id) {
+          event.preventDefault();
+          toggleImageSelection(entry.id);
+          return;
+        }
         const allItems = document.querySelectorAll('.gallery-item');
         const index = Array.from(allItems).indexOf(item);
         if (typeof openGalleryModal === 'function') openGalleryModal(index);
@@ -3159,6 +3211,8 @@
       deleteButton.type = 'button';
       deleteButton.className = 'gallery-delete-btn';
       deleteButton.textContent = '🗑️';
+      deleteButton.dataset.testid = 'single-delete-button';
+      deleteButton.dataset.imageId = imageId;
       deleteButton.setAttribute('aria-label', 'حذف الصورة');
       deleteButton.onclick = async function(event) {
         event.stopPropagation();
@@ -3171,25 +3225,44 @@
     function syncGalleryEditMode() {
       const items = document.querySelectorAll('.gallery-grid .gallery-item');
       const toggleButton = document.getElementById('toggleGalleryEditMode');
+      const pageToggleButton = document.getElementById('toggleGalleryEditModeButton');
+      const toolbar = document.getElementById('galleryEditToolbar');
+      const bulkDeleteButton = document.getElementById('bulkDeleteGalleryButton');
 
       if (toggleButton) {
         toggleButton.textContent = isGalleryEditMode ? 'إيقاف وضع التحرير' : 'تفعيل وضع التحرير';
       }
 
+      if (pageToggleButton) {
+        pageToggleButton.textContent = isGalleryEditMode ? 'إنهاء التحرير' : 'وضع التحرير';
+      }
+
+      if (toolbar) {
+        toolbar.style.display = isAdminLoggedIn ? 'flex' : 'none';
+      }
+
+      if (bulkDeleteButton) {
+        bulkDeleteButton.disabled = !isAdminLoggedIn || !isGalleryEditMode || selectedImageIds.size === 0;
+      }
+
       items.forEach((item) => {
         item.classList.toggle('edit-mode', Boolean(isAdminLoggedIn && isGalleryEditMode));
+        item.classList.toggle('selected-for-delete', Boolean(isAdminLoggedIn && isGalleryEditMode && selectedImageIds.has(item.dataset.id)));
 
         if (isAdminLoggedIn && isGalleryEditMode && item.dataset.id) {
           injectDeleteButton(item, item.dataset.id);
         } else {
+          item.classList.remove('selected-for-delete');
           const deleteButton = item.querySelector('.gallery-delete-btn');
           if (deleteButton) deleteButton.remove();
         }
       });
     }
 
-    async function deleteImage(imageId) {
+    async function deleteImage(imageId, options = {}) {
+      const { skipRender = false, silent = false } = options;
       const galleryGrid = document.querySelector('.gallery-grid');
+      if (!galleryGrid) return false;
       const galleryItems = galleryGrid.querySelectorAll('.gallery-item');
 
       let deletedImage = null;
@@ -3228,12 +3301,18 @@
 
         // Remove from DOM
         itemToRemove.remove();
-        renderTrashBinTab();
-        syncGalleryEditMode();
+        selectedImageIds.delete(imageId);
+        trackImageDelete(1);
 
-        // Show success message
-        showToast('تم نقل الصورة إلى سلة المحذوفات', 'success');
+        if (!skipRender) {
+          renderTrashBinTab();
+          renderStatsTab();
+          syncGalleryEditMode();
+        }
 
+        if (!silent) {
+          showToast('تم نقل الصورة إلى سلة المحذوفات', 'success');
+        }
         return true;
       }
 
@@ -3273,8 +3352,8 @@
       saveTrashBinToStorage();
       renderGalleryFromManifest(galleryManifest.images);
       renderTrashBinTab();
+      renderStatsTab();
       syncGalleryEditMode();
-
       showToast('تم استعادة الصورة بنجاح', 'success');
 
       return true;
@@ -3297,6 +3376,8 @@
       // Remove from trash
       trashBin.splice(trashIndex, 1);
       saveTrashBinToStorage();
+      renderTrashBinTab();
+      renderStatsTab();
       
       showToast('تم الحذف النهائي بنجاح', 'success');
       
@@ -3319,6 +3400,8 @@
       // Clear trash
       trashBin = [];
       saveTrashBinToStorage();
+      renderTrashBinTab();
+      renderStatsTab();
       
       showToast(`تم حذف ${count} صورة نهائياً`, 'success');
       
@@ -3469,6 +3552,7 @@
       
       // Update gallery buttons
       updateGalleryButtons();
+      syncGalleryEditMode();
     }
     
     // Admin login
@@ -3498,6 +3582,7 @@
     function adminLogout() {
       isAdminLoggedIn = false;
       isGalleryEditMode = false;
+      selectedImageIds.clear();
       syncGalleryEditMode();
       hideAdminPanel();
       showToast('تم تسجيل الخروج', 'info');
@@ -3936,6 +4021,14 @@
         }
         
         /* Gallery Edit Mode */
+        .gallery-edit-toolbar {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.75rem;
+          justify-content: center;
+          margin-top: 1rem;
+        }
+
         .gallery-item {
           position: relative;
         }
@@ -3950,6 +4043,11 @@
           background: rgba(239, 68, 68, 0.3);
           border-radius: var(--radius-xl);
           pointer-events: none;
+        }
+
+        .gallery-item.selected-for-delete::after {
+          background: rgba(15, 118, 110, 0.45);
+          box-shadow: inset 0 0 0 3px rgba(15, 118, 110, 0.9);
         }
         
         .gallery-delete-btn {
@@ -3979,6 +4077,11 @@
         .gallery-delete-btn:hover {
           background: #dc2626;
           transform: scale(1.1);
+        }
+
+        .gallery-edit-toolbar .btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
         }
         
         /* Section Hidden State */
@@ -4330,6 +4433,9 @@
       }
 
       isGalleryEditMode = !isGalleryEditMode;
+      if (!isGalleryEditMode) {
+        selectedImageIds.clear();
+      }
       syncGalleryEditMode();
 
       const toggleButton = document.getElementById('toggleGalleryEditMode');
@@ -4339,7 +4445,7 @@
 
       if (isGalleryEditMode) {
         hideAdminPanel();
-        showToast('تم تفعيل وضع التحرير. اضغط على أيقونة الحذف فوق الصورة.', 'info');
+        showToast('تم تفعيل وضع التحرير. يمكنك تحديد عدة صور أو حذفها واحدة تلو الأخرى.', 'info');
       }
     }
     

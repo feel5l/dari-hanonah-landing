@@ -80,5 +80,6 @@ test.describe('Landing page regression guards', () => {
     });
 
     await expect(page.locator('#uploadProgressAdmin')).toBeVisible();
+    await expect(page.locator('.gallery-grid .gallery-item')).toHaveCount(9, { timeout: 10000 });
   });
 });

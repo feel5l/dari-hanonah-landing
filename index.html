@@ -2724,15 +2724,25 @@
     }
 
     async function handleImageUpload(event) {
-      const files = event.target.files;
-      if (files.length === 0) return;
+      const input = event.target;
+      const files = input.files;
+      if (!files || files.length === 0) return;
 
-      const progressDiv = document.getElementById('uploadProgress');
-      const progressFill = document.getElementById('progressFill');
-      const progressText = document.getElementById('progressText');
+      const isAdminUpload = input.id === 'imageUploadAdmin';
+      const progressDiv = document.getElementById(isAdminUpload ? 'uploadProgressAdmin' : 'uploadProgress');
+      const progressFill = document.getElementById(isAdminUpload ? 'progressFillAdmin' : 'progressFill');
+      const progressText = document.getElementById(isAdminUpload ? 'progressTextAdmin' : 'progressText');
       const galleryGrid = document.querySelector('.gallery-grid');
 
+      if (!progressDiv || !progressFill || !progressText || !galleryGrid) {
+        console.error('Upload UI elements are missing for the current upload context');
+        showToast('تعذر تجهيز واجهة الرفع', 'error');
+        return;
+      }
+
       progressDiv.style.display = 'block';
+      progressFill.style.width = '0%';
+      progressText.textContent = 'جاري تجهيز الرفع...';
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -2833,11 +2843,21 @@
       saveGalleryToStorage();
 
       progressDiv.style.display = 'none';
+      progressFill.style.width = '0%';
+      progressText.textContent = 'جاري الرفع...';
       alert(`تم رفع ${files.length} صورة بنجاح!`);
-      closeUploadModal();
+
+      if (isAdminUpload) {
+        const dashboardModal = document.getElementById('adminDashboardModal');
+        if (dashboardModal) {
+          dashboardModal.style.display = 'flex';
+        }
+      } else {
+        closeUploadModal();
+      }
       
       // Reset file input
-      event.target.value = '';
+      input.value = '';
     }
 
     // ===========================================

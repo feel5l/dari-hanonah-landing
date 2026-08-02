@@ -54,4 +54,31 @@ test.describe('Landing page regression guards', () => {
     await expect(successMessage).toHaveClass(/show/, { timeout: 5000 });
     await expect(page.locator('#contactForm')).toHaveAttribute('onsubmit', 'handleFormSubmit(event)');
   });
+
+  test('allows admin users to reach the upload tab and choose an image without client-side failure', async ({ page }) => {
+    await page.goto('/');
+
+    await page.locator('.upload-btn').click();
+    await expect(page.locator('#adminLoginModal')).toBeVisible();
+
+    await page.locator('#adminPasswordInput').fill('dari2024');
+    await page.locator('#adminLoginModal button[type="submit"]').click();
+
+    await expect(page.locator('#adminDashboardModal')).toBeVisible();
+    await expect(page.locator('#uploadTabContent')).not.toHaveClass(/active/);
+
+    await page.locator('.admin-tab[data-tab="upload"]').click();
+    await expect(page.locator('#uploadTabContent')).toHaveClass(/active/);
+
+    await page.locator('#imageUploadAdmin').setInputFiles({
+      name: 'upload-test.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9WnQm4sAAAAASUVORK5CYII=',
+        'base64'
+      )
+    });
+
+    await expect(page.locator('#uploadProgressAdmin')).toBeVisible();
+  });
 });

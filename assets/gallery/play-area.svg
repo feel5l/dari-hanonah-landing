@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">منطقة اللعب</title>
+  <desc id="desc">رسم توضيحي لمنطقة لعب آمنة للأطفال.</desc>
+  <rect width="1200" height="700" fill="#dcfce7"/>
+  <rect y="470" width="1200" height="230" fill="#86efac"/>
+  <rect x="120" y="310" width="220" height="220" rx="24" fill="#fb7185"/>
+  <rect x="190" y="220" width="80" height="110" rx="10" fill="#64748b"/>
+  <path d="M430 520h260l-130-230z" fill="#f59e0b"/>
+  <rect x="760" y="350" width="300" height="180" rx="24" fill="#38bdf8"/>
+  <circle cx="840" cy="420" r="28" fill="#ecfeff"/>
+  <circle cx="980" cy="420" r="28" fill="#ecfeff"/>
+  <rect x="520" y="300" width="40" height="220" fill="#0f766e"/>
+  <circle cx="540" cy="270" r="45" fill="#22c55e"/>
+</svg>

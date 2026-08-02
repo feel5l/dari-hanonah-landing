@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">الفصل الدراسي</title>
+  <desc id="desc">رسم توضيحي لفصل دراسي مجهز للأطفال.</desc>
+  <rect width="1200" height="700" fill="#f8fafc"/>
+  <rect x="90" y="120" width="1020" height="520" rx="24" fill="#ffffff" stroke="#cbd5e1" stroke-width="6"/>
+  <rect x="150" y="190" width="360" height="200" rx="14" fill="#14b8a6"/>
+  <rect x="550" y="190" width="500" height="200" rx="14" fill="#0ea5e9"/>
+  <rect x="170" y="450" width="220" height="90" rx="12" fill="#fb7185"/>
+  <rect x="430" y="450" width="220" height="90" rx="12" fill="#facc15"/>
+  <rect x="690" y="450" width="220" height="90" rx="12" fill="#4ade80"/>
+  <circle cx="280" cy="300" r="34" fill="#ecfeff"/>
+  <circle cx="780" cy="300" r="34" fill="#bae6fd"/>
+  <rect x="980" y="450" width="90" height="90" rx="12" fill="#a78bfa"/>
+</svg>

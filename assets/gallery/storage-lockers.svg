@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">خزائن الأطفال</title>
+  <desc id="desc">رسم توضيحي لخزائن مخصصة لتنظيم مقتنيات الأطفال.</desc>
+  <rect width="1200" height="700" fill="#e0f2fe"/>
+  <rect x="120" y="120" width="960" height="500" rx="24" fill="#ffffff" stroke="#bae6fd" stroke-width="8"/>
+  <g fill="#14b8a6">
+    <rect x="180" y="190" width="180" height="170" rx="12"/>
+    <rect x="390" y="190" width="180" height="170" rx="12"/>
+    <rect x="600" y="190" width="180" height="170" rx="12"/>
+    <rect x="810" y="190" width="180" height="170" rx="12"/>
+    <rect x="180" y="390" width="180" height="170" rx="12"/>
+    <rect x="390" y="390" width="180" height="170" rx="12"/>
+    <rect x="600" y="390" width="180" height="170" rx="12"/>
+    <rect x="810" y="390" width="180" height="170" rx="12"/>
+  </g>
+  <g fill="#ecfeff">
+    <circle cx="270" cy="275" r="18"/><circle cx="480" cy="275" r="18"/><circle cx="690" cy="275" r="18"/><circle cx="900" cy="275" r="18"/>
+    <circle cx="270" cy="475" r="18"/><circle cx="480" cy="475" r="18"/><circle cx="690" cy="475" r="18"/><circle cx="900" cy="475" r="18"/>
+  </g>
+</svg>

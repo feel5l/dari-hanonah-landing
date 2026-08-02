@@ -23,6 +23,8 @@
     .hero-actions { display:flex; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; }
     .btn-primary { background:#f97316; color:#fff; padding:0.7rem 1.3rem; border-radius:999px; font-weight:600; border:none; cursor:pointer; font-size:0.95rem; }
     .btn-secondary { background:transparent; color:#ecfeff; padding:0.65rem 1.1rem; border-radius:999px; border:1px solid rgba(240,253,250,0.7); font-weight:500; cursor:pointer; font-size:0.9rem; }
+    .btn-primary, .btn-secondary { display:inline-flex; align-items:center; justify-content:center; text-align:center; }
+    .btn-link { line-height:1.4; }
 
     .lead-box { background:#ecfeff; color:#0f172a; padding:1rem 1rem 1.2rem; border-radius:0.9rem; box-shadow:0 18px 40px rgba(15,23,42,0.32); }
     .lead-box h3 { margin-top:0; margin-bottom:0.8rem; font-size:1.05rem; }
@@ -51,7 +53,9 @@
     .gallery-grid { display:grid; gap:0.8rem; grid-template-columns:repeat(3,minmax(0,1fr)); }
     @media (max-width:850px) { .gallery-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
     @media (max-width:600px) { .gallery-grid { grid-template-columns:1fr; } }
-    .gallery-item { background:#e5e7eb; border-radius:0.8rem; height:150px; display:flex; align-items:center; justify-content:center; color:#6b7280; font-size:0.85rem; padding:0.5rem; text-align:center; }
+    .gallery-item { background:#ffffff; border-radius:0.8rem; border:1px solid #dbe5ef; box-shadow:0 4px 14px rgba(15,23,42,0.06); overflow:hidden; }
+    .gallery-item img { width:100%; height:170px; object-fit:cover; display:block; }
+    .gallery-item figcaption { color:#475569; font-size:0.82rem; padding:0.65rem 0.7rem 0.75rem; line-height:1.5; }
 
     .testimonials { display:grid; gap:1rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
     @media (max-width:800px) { .testimonials { grid-template-columns:1fr; } }
@@ -70,6 +74,7 @@
     .form-main textarea { min-height:80px; resize:vertical; }
     .checkbox-row { display:flex; align-items:flex-start; gap:0.4rem; font-size:0.78rem; margin-bottom:0.7rem; }
     .checkbox-row input { margin-top:0.15rem; }
+    .form-status { font-size:0.82rem; margin-top:0.55rem; }
 
     footer { background:#020617; color:#9ca3af; padding:1.2rem 0 1.5rem; font-size:0.8rem; }
     .footer-grid { display:grid; grid-template-columns:2fr 1fr; gap:1rem; align-items:flex-start; }
@@ -101,48 +106,49 @@
           <span class="badge">باقات شهرية وأسبوعية ويومية مرنة</span>
         </div>
         <div class="hero-actions">
-          <a href="#visit-form"><button class="btn-primary">احجزي زيارة للمركز الآن</button></a>
-          <a href="https://wa.me/966546425459" target="_blank" rel="noopener"><button class="btn-secondary">راسلينا على واتساب</button></a>
+          <a class="btn-primary btn-link" href="#visit-form">احجزي زيارة للمركز الآن</a>
+          <a class="btn-secondary btn-link" href="https://wa.me/966546425459" target="_blank" rel="noopener">راسلينا على واتساب</a>
         </div>
         <p class="hint">املئي النموذج أو أرسلي لنا على الواتساب، وسيتواصل معك فريق داري الحنونة خلال أقرب وقت.</p>
       </div>
       <div>
         <div class="lead-box" id="lead-form">
           <h3>استشارة مجانية لاختيار أنسب برنامج لطفلك</h3>
-          <form class="lead-form">
+          <form class="lead-form" id="lead-form-main" novalidate>
             <div>
               <label for="mother-name">اسم الأم</label>
-              <input id="mother-name" type="text" placeholder="اكتبي اسمك" />
+              <input id="mother-name" name="mother_name" type="text" placeholder="اكتبي اسمك" autocomplete="name" minlength="2" required />
             </div>
             <div>
               <label for="phone">رقم الجوال</label>
-              <input id="phone" type="tel" placeholder="05xxxxxxxx" />
+              <input id="phone" name="phone" type="tel" placeholder="05xxxxxxxx" inputmode="numeric" pattern="05[0-9]{8}" required />
             </div>
             <div>
               <label for="child-age">عمر الطفل</label>
-              <select id="child-age">
-                <option>اختاري العمر</option>
-                <option>أقل من سنة</option>
-                <option>1–2 سنة</option>
-                <option>3–4 سنوات</option>
-                <option>5–6 سنوات</option>
+              <select id="child-age" name="child_age" required>
+                <option value="" selected disabled>اختاري العمر</option>
+                <option value="أقل من سنة">أقل من سنة</option>
+                <option value="1–2 سنة">1–2 سنة</option>
+                <option value="3–4 سنوات">3–4 سنوات</option>
+                <option value="5–6 سنوات">5–6 سنوات</option>
               </select>
             </div>
             <div>
               <label for="service">ما الخدمة التي تبحثين عنها؟</label>
-              <select id="service">
-                <option>اختاري نوع الخدمة</option>
-                <option>حضانة مواليد/صغار</option>
-                <option>حضانة تعليمية (من سنة)</option>
-                <option>روضة / تمهيدي</option>
+              <select id="service" name="service" required>
+                <option value="" selected disabled>اختاري نوع الخدمة</option>
+                <option value="حضانة مواليد/صغار">حضانة مواليد/صغار</option>
+                <option value="حضانة تعليمية (من سنة)">حضانة تعليمية (من سنة)</option>
+                <option value="روضة / تمهيدي">روضة / تمهيدي</option>
               </select>
             </div>
             <div>
               <label for="note">رسالة أو استفسار (اختياري)</label>
-              <textarea id="note" placeholder="اكتبي أي ملاحظة أو استفسار عن طفلك"></textarea>
+              <textarea id="note" name="note" placeholder="اكتبي أي ملاحظة أو استفسار عن طفلك"></textarea>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%; margin-top:0.3rem;">إرسال طلبي الآن</button>
+            <button type="submit" class="btn-primary" style="width:100%; margin-top:0.3rem;">إرسال طلبي عبر واتساب</button>
             <p class="hint">بالضغط على إرسال، أنتِ توافقين على تواصل المركز معك عبر الجوال أو الواتساب لتزويدك بالمعلومات والعروض.</p>
+            <p class="form-status" id="lead-status" aria-live="polite"></p>
           </form>
         </div>
       </div>
@@ -187,7 +193,7 @@
         </div>
       </div>
       <div style="margin-top:1.4rem;">
-        <a href="#visit-form"><button class="btn-primary">أريد معرفة الباقات المتاحة لعمر طفلي</button></a>
+        <a class="btn-primary btn-link" href="#visit-form">أريد معرفة الباقات المتاحة لعمر طفلي</a>
       </div>
     </div>
   </section>
@@ -231,15 +237,33 @@
     <div class="container">
       <h2>بيئة طفلك في داري الحنونة</h2>
       <p class="sec-intro">
-        شاهدي بعض الأمثلة لما ستكون عليه بيئة طفلك معنا، ويمكنك استبدال هذه المربعات بصور حقيقية من المركز لاحقًا.
+        لقطات تعريفية من مرافق داري الحنونة وأنشطتها اليومية لتكوين صورة أوضح عن بيئة طفلك معنا.
       </p>
       <div class="gallery-grid">
-        <div class="gallery-item">صورة الساحة الخارجية مع نظام الرذاذ الضبابي</div>
-        <div class="gallery-item">صورة فصل واسع بإضاءة طبيعية وأرضيات إسفنجية</div>
-        <div class="gallery-item">صورة منطقة الثيل الأخضر والأنشطة الخارجية</div>
-        <div class="gallery-item">صورة ركن القراءة والقصص</div>
-        <div class="gallery-item">صورة اللوكرات بأسماء وصور الأطفال</div>
-        <div class="gallery-item">صورة من إحدى الحفلات التحفيزية أو التخرج</div>
+        <figure class="gallery-item">
+          <img src="assets/gallery/outdoor-yard.svg" alt="الساحة الخارجية المجهزة للأنشطة" loading="lazy" />
+          <figcaption>الساحة الخارجية المجهزة للأنشطة الحركية اليومية.</figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <img src="assets/gallery/classroom.svg" alt="فصل تعليمي منظم بإضاءة مناسبة" loading="lazy" />
+          <figcaption>فصل تعليمي منظم يساعد الطفل على التركيز والتفاعل.</figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <img src="assets/gallery/play-area.svg" alt="منطقة لعب آمنة للأطفال" loading="lazy" />
+          <figcaption>منطقة لعب آمنة لتنمية المهارات الاجتماعية والحركية.</figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <img src="assets/gallery/reading-corner.svg" alt="ركن قراءة وقصص للأطفال" loading="lazy" />
+          <figcaption>ركن القراءة والقصص لبناء حب التعلم واللغة.</figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <img src="assets/gallery/storage-lockers.svg" alt="خزائن مخصصة للأطفال" loading="lazy" />
+          <figcaption>خزائن مخصصة لكل طفل لتنظيم مقتنياته اليومية.</figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <img src="assets/gallery/activity-event.svg" alt="فعالية تعليمية ترفيهية داخل المركز" loading="lazy" />
+          <figcaption>فعاليات تعليمية وترفيهية تعزز الثقة وروح المشاركة.</figcaption>
+        </figure>
       </div>
     </div>
   </section>
@@ -261,7 +285,7 @@
         </div>
       </div>
       <div style="margin-top:1.2rem;">
-        <a href="https://www.instagram.com/dari_alhanonah/" target="_blank" rel="noopener"><button class="btn-secondary">شاهدي المزيد من تجارب الأمهات على إنستغرام</button></a>
+        <a class="btn-secondary btn-link" href="https://www.instagram.com/dari_alhanonah/" target="_blank" rel="noopener">شاهدي المزيد من تجارب الأمهات على إنستغرام</a>
       </div>
     </div>
   </section>
@@ -275,7 +299,7 @@
       </div>
       <div class="faq-item">
         <div class="faq-q">ما أوقات الدوام؟</div>
-        <div class="faq-a">تُحدّد حسب نظام المركز (يمكنك تعديل هذا النص لاحقًا)، مثلًا: من الساعة 7:00 صباحًا حتى 2:30 ظهرًا، مع خيارات تمديد لبعض الباقات.</div>
+        <div class="faq-a">ساعات العمل من 7:00 صباحًا حتى 2:30 ظهرًا، مع توفر خيارات تمديد لبعض الباقات حسب المقاعد المتاحة.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">هل يمكنني زيارة طفلي خلال اليوم؟</div>
@@ -301,51 +325,55 @@
         </p>
       </div>
       <div>
-        <form class="form-main">
+        <form class="form-main" id="visit-form-main" novalidate>
           <label for="mother-name-2">اسم الأم</label>
-          <input id="mother-name-2" type="text" placeholder="اكتبي اسمك الثلاثي" />
+          <input id="mother-name-2" name="mother_name" type="text" placeholder="اكتبي اسمك الثلاثي" autocomplete="name" minlength="2" required />
 
           <label for="child-name">اسم الطفل (اختياري)</label>
-          <input id="child-name" type="text" placeholder="اسم طفلك" />
+          <input id="child-name" name="child_name" type="text" placeholder="اسم طفلك" />
 
           <label for="child-age-2">عمر الطفل</label>
-          <select id="child-age-2">
-            <option>اختاري العمر</option>
-            <option>أقل من سنة</option>
-            <option>1–2 سنة</option>
-            <option>3–4 سنوات</option>
-            <option>5–6 سنوات</option>
+          <select id="child-age-2" name="child_age" required>
+            <option value="" selected disabled>اختاري العمر</option>
+            <option value="أقل من سنة">أقل من سنة</option>
+            <option value="1–2 سنة">1–2 سنة</option>
+            <option value="3–4 سنوات">3–4 سنوات</option>
+            <option value="5–6 سنوات">5–6 سنوات</option>
           </select>
 
           <label for="service-2">ما الخدمة التي تبحثين عنها؟</label>
-          <select id="service-2">
-            <option>حضانة مواليد/صغار</option>
-            <option>حضانة تعليمية (من سنة)</option>
-            <option>روضة / تمهيدي</option>
+          <select id="service-2" name="service" required>
+            <option value="" selected disabled>اختاري نوع الخدمة</option>
+            <option value="حضانة مواليد/صغار">حضانة مواليد/صغار</option>
+            <option value="حضانة تعليمية (من سنة)">حضانة تعليمية (من سنة)</option>
+            <option value="روضة / تمهيدي">روضة / تمهيدي</option>
           </select>
 
           <label for="contact-time">أفضل وقت للتواصل معك</label>
-          <select id="contact-time">
-            <option>صباحًا</option>
-            <option>ظهرًا</option>
-            <option>مساءً</option>
+          <select id="contact-time" name="contact_time" required>
+            <option value="" selected disabled>اختاري الوقت</option>
+            <option value="صباحًا">صباحًا</option>
+            <option value="ظهرًا">ظهرًا</option>
+            <option value="مساءً">مساءً</option>
           </select>
 
           <label for="contact-way">طريقة التواصل المفضلة</label>
-          <select id="contact-way">
-            <option>اتصال هاتفي</option>
-            <option>واتساب</option>
+          <select id="contact-way" name="contact_way" required>
+            <option value="" selected disabled>اختاري طريقة التواصل</option>
+            <option value="اتصال هاتفي">اتصال هاتفي</option>
+            <option value="واتساب">واتساب</option>
           </select>
 
           <label for="message">رسالتك لنا</label>
-          <textarea id="message" placeholder="اكتبي أي تفاصيل عن طفلك أو استفسارات حول البرامج أو الأوقات"></textarea>
+          <textarea id="message" name="message" placeholder="اكتبي أي تفاصيل عن طفلك أو استفسارات حول البرامج أو الأوقات"></textarea>
 
           <div class="checkbox-row">
-            <input id="agree" type="checkbox" />
+            <input id="agree" name="agree" type="checkbox" required />
             <label for="agree">أوافق على التواصل معي لإرسال العروض والمعلومات الخاصة بالمركز.</label>
           </div>
 
-          <button type="submit" class="btn-primary" style="width:100%;">إرسال الطلب الآن</button>
+          <button type="submit" class="btn-primary" style="width:100%;">إرسال الطلب عبر واتساب</button>
+          <p class="form-status" id="visit-status" aria-live="polite"></p>
         </form>
       </div>
     </div>
@@ -355,8 +383,8 @@
     <div class="container footer-grid">
       <div>
         <div><strong>مركز داري الحنونة الأهلية لضيافة الأطفال – روضة وحضانة نموذجية</strong></div>
-        <div style="margin-top:0.4rem;">الموقع: الأحساء – الهفوف – حي السلمانية الشمالية (يمكن إضافة رابط خرائط جوجل هنا).</div>
-        <div>أوقات العمل: من … إلى … (عدّل حسب أوقاتكم الفعلية).</div>
+        <div style="margin-top:0.4rem;">الموقع: الأحساء – الهفوف – حي السلمانية الشمالية.</div>
+        <div>أوقات العمل: يوميًا من 7:00 صباحًا حتى 2:30 ظهرًا.</div>
       </div>
       <div>
         <div>تواصلي معنا:</div>
@@ -373,5 +401,84 @@
       جميع الحقوق محفوظة © داري الحنونة – الهفوف، حي السلمانية.
     </div>
   </footer>
+  <script>
+    (() => {
+      const whatsappNumber = "966546425459";
+
+      function normalizePhone(value) {
+        return value.replace(/[^\d]/g, "");
+      }
+
+      function validSaudiMobile(value) {
+        return /^05\d{8}$/.test(normalizePhone(value));
+      }
+
+      function sendViaWhatsApp(message) {
+        const encoded = encodeURIComponent(message);
+        const url = `https://wa.me/${whatsappNumber}?text=${encoded}`;
+        const popup = window.open(url, "_blank", "noopener");
+        if (!popup) window.location.href = url;
+      }
+
+      function setStatus(element, message, success) {
+        element.textContent = message;
+        element.style.color = success ? "#047857" : "#b91c1c";
+      }
+
+      const leadForm = document.getElementById("lead-form-main");
+      const leadStatus = document.getElementById("lead-status");
+      leadForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const phoneValue = leadForm.phone.value.trim();
+        if (!leadForm.reportValidity()) {
+          setStatus(leadStatus, "الرجاء تعبئة الحقول المطلوبة بشكل صحيح.", false);
+          return;
+        }
+        if (!validSaudiMobile(phoneValue)) {
+          leadForm.phone.setCustomValidity("أدخلي رقم جوال سعودي بصيغة 05xxxxxxxx");
+          leadForm.reportValidity();
+          leadForm.phone.setCustomValidity("");
+          setStatus(leadStatus, "تحققي من رقم الجوال وأعيدي المحاولة.", false);
+          return;
+        }
+
+        const message = [
+          "طلب استشارة جديدة من صفحة داري الحنونة",
+          `اسم الأم: ${leadForm.mother_name.value.trim()}`,
+          `رقم الجوال: ${normalizePhone(phoneValue)}`,
+          `عمر الطفل: ${leadForm.child_age.value}`,
+          `الخدمة المطلوبة: ${leadForm.service.value}`,
+          `استفسار إضافي: ${leadForm.note.value.trim() || "لا يوجد"}`
+        ].join("\n");
+
+        sendViaWhatsApp(message);
+        setStatus(leadStatus, "تم تجهيز رسالتك على واتساب، الرجاء الضغط على إرسال داخل واتساب لإتمام الطلب.", true);
+      });
+
+      const visitForm = document.getElementById("visit-form-main");
+      const visitStatus = document.getElementById("visit-status");
+      visitForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (!visitForm.reportValidity()) {
+          setStatus(visitStatus, "الرجاء تعبئة الحقول المطلوبة والموافقة على سياسة التواصل.", false);
+          return;
+        }
+
+        const message = [
+          "طلب زيارة/حجز مقعد جديد من صفحة داري الحنونة",
+          `اسم الأم: ${visitForm.mother_name.value.trim()}`,
+          `اسم الطفل: ${visitForm.child_name.value.trim() || "غير مذكور"}`,
+          `عمر الطفل: ${visitForm.child_age.value}`,
+          `الخدمة المطلوبة: ${visitForm.service.value}`,
+          `أفضل وقت للتواصل: ${visitForm.contact_time.value}`,
+          `طريقة التواصل المفضلة: ${visitForm.contact_way.value}`,
+          `تفاصيل إضافية: ${visitForm.message.value.trim() || "لا يوجد"}`
+        ].join("\n");
+
+        sendViaWhatsApp(message);
+        setStatus(visitStatus, "تم تجهيز رسالتك على واتساب، الرجاء الضغط على إرسال داخل واتساب لإتمام الطلب.", true);
+      });
+    })();
+  </script>
 </body>
 </html>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">ركن القراءة</title>
+  <desc id="desc">رسم توضيحي لركن القراءة والقصص للأطفال.</desc>
+  <rect width="1200" height="700" fill="#fef9c3"/>
+  <rect x="110" y="120" width="980" height="500" rx="24" fill="#ffffff" stroke="#fde68a" stroke-width="8"/>
+  <rect x="180" y="200" width="160" height="320" rx="10" fill="#f97316"/>
+  <rect x="360" y="200" width="160" height="320" rx="10" fill="#0ea5e9"/>
+  <rect x="540" y="200" width="160" height="320" rx="10" fill="#22c55e"/>
+  <rect x="720" y="200" width="160" height="320" rx="10" fill="#a855f7"/>
+  <rect x="900" y="200" width="120" height="320" rx="10" fill="#ef4444"/>
+  <rect x="240" y="430" width="640" height="130" rx="18" fill="#fde68a"/>
+</svg>

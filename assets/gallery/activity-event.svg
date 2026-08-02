@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">فعالية تعليمية</title>
+  <desc id="desc">رسم توضيحي لفعالية تعليمية وترفيهية داخل المركز.</desc>
+  <rect width="1200" height="700" fill="#f5f3ff"/>
+  <rect x="120" y="130" width="960" height="460" rx="28" fill="#ffffff" stroke="#ddd6fe" stroke-width="8"/>
+  <circle cx="250" cy="240" r="70" fill="#fb7185"/>
+  <circle cx="430" cy="240" r="70" fill="#f59e0b"/>
+  <circle cx="610" cy="240" r="70" fill="#22c55e"/>
+  <circle cx="790" cy="240" r="70" fill="#0ea5e9"/>
+  <circle cx="970" cy="240" r="70" fill="#a855f7"/>
+  <rect x="190" y="380" width="820" height="140" rx="20" fill="#ede9fe"/>
+  <path d="M220 520l80-80 80 80 80-80 80 80 80-80 80 80 80-80 80 80" stroke="#6366f1" stroke-width="16" fill="none" stroke-linecap="round"/>
+</svg>

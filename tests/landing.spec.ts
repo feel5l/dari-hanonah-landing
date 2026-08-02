@@ -259,6 +259,28 @@ test.describe('Landing page regression guards', () => {
     await expect(page.locator('#githubPatStatus')).toContainText('Worker');
   });
 
+  test('shows a clear admin login error when the worker login request fails', async ({ page }) => {
+    await page.route('https://dari-hanonah-gallery.gemini-linkin40.workers.dev/api/health', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ ok: true, mode: 'worker', configured: true })
+      });
+    });
+
+    await page.route('https://dari-hanonah-gallery.gemini-linkin40.workers.dev/api/auth/login', async (route) => {
+      await route.abort('failed');
+    });
+
+    await page.goto('/');
+    await page.locator('.upload-btn').click();
+    await page.locator('#adminPasswordInput').fill('dari2024');
+    await page.locator('#adminLoginModal button[type="submit"]').click();
+
+    await expect(page.locator('#adminLoginError')).toBeVisible();
+    await expect(page.locator('#adminLoginError')).toContainText('تعذر الاتصال');
+  });
+
   test('deletes a gallery image through the configured worker endpoint without a GitHub PAT', async ({ page }) => {
     let manifest = {
       version: 1,

@@ -4007,41 +4007,76 @@
     }
     
     // Admin login
+    function setAdminLoginBusyState(isBusy) {
+      const passwordInput = document.getElementById('adminPasswordInput');
+      const submitButton = document.querySelector('#adminLoginModal button[type="submit"]');
+
+      if (passwordInput) {
+        passwordInput.disabled = isBusy;
+      }
+
+      if (submitButton) {
+        submitButton.disabled = isBusy;
+        submitButton.textContent = isBusy ? 'جاري الدخول...' : 'دخول';
+      }
+    }
+
+    function showAdminLoginError(message) {
+      const errorDiv = document.getElementById('adminLoginError');
+      if (!errorDiv) return;
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+    }
+
+    function clearAdminLoginError() {
+      const errorDiv = document.getElementById('adminLoginError');
+      if (!errorDiv) return;
+      errorDiv.textContent = '';
+      errorDiv.style.display = 'none';
+    }
+
     async function adminLogin() {
       const passwordInput = document.getElementById('adminPasswordInput');
-      const errorDiv = document.getElementById('adminLoginError');
-      
       if (!passwordInput) return;
-      
-      const password = passwordInput.value;
 
-      if (isWorkerModeEnabled()) {
-        const workerLogin = await loginWithWorker(password);
-        if (workerLogin.ok) {
-          isAdminLoggedIn = true;
-          errorDiv.style.display = 'none';
-          passwordInput.value = '';
-          showAdminPanel();
-          showToast('تم تسجيل الدخول بنجاح عبر Cloudflare Worker', 'success');
+      const password = passwordInput.value;
+      clearAdminLoginError();
+      setAdminLoginBusyState(true);
+
+      try {
+        if (isWorkerModeEnabled()) {
+          const workerLogin = await Promise.race([
+            loginWithWorker(password),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('worker-login-timeout')), 8000))
+          ]);
+
+          if (workerLogin.ok) {
+            isAdminLoggedIn = true;
+            passwordInput.value = '';
+            showAdminPanel();
+            showToast('تم تسجيل الدخول بنجاح عبر Cloudflare Worker', 'success');
+            return;
+          }
+
+          showAdminLoginError(workerLogin.message || 'تعذر تسجيل الدخول');
           return;
         }
 
-        errorDiv.textContent = workerLogin.message || 'تعذر تسجيل الدخول';
-        errorDiv.style.display = 'block';
-        return;
-      }
+        if (password === ADMIN_PASSWORD) {
+          isAdminLoggedIn = true;
+          passwordInput.value = '';
+          
+          // Show admin panel
+          showAdminPanel();
+          showToast('تم تسجيل الدخول بنجاح', 'success');
+          return;
+        }
 
-      if (password === ADMIN_PASSWORD) {
-        isAdminLoggedIn = true;
-        errorDiv.style.display = 'none';
-        passwordInput.value = '';
-        
-        // Show admin panel
-        showAdminPanel();
-        showToast('تم تسجيل الدخول بنجاح', 'success');
-      } else {
-        errorDiv.textContent = 'كلمة المرور غير صحيحة';
-        errorDiv.style.display = 'block';
+        showAdminLoginError('كلمة المرور غير صحيحة');
+      } catch (error) {
+        showAdminLoginError('تعذر الاتصال بخدمة الدخول، حاول مرة أخرى');
+      } finally {
+        setAdminLoginBusyState(false);
       }
     }
     
@@ -4637,10 +4672,12 @@
       if (modal) {
         modal.style.display = 'none';
       }
-      const errorDiv = document.getElementById('adminLoginError');
-      if (errorDiv) {
-        errorDiv.style.display = 'none';
+      const passwordInput = document.getElementById('adminPasswordInput');
+      if (passwordInput) {
+        passwordInput.value = '';
       }
+      clearAdminLoginError();
+      setAdminLoginBusyState(false);
     }
     
     // Render section settings

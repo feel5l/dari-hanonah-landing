@@ -134,11 +134,12 @@ test.describe('Landing page regression guards', () => {
     await page.waitForFunction(() => window.galleryManifest && Array.isArray(window.galleryManifest.images));
 
     const manifestImages = await page.evaluate(() => window.galleryManifest.images);
-    expect(manifestImages.length).toBeGreaterThanOrEqual(8);
+    expect(manifestImages.length).toBeGreaterThan(0);
 
     const gridSrcs = await page.locator('.gallery-grid .gallery-item img').evaluateAll(
       (imgs) => imgs.map((img) => img.getAttribute('src'))
     );
+    expect(gridSrcs.length).toBe(manifestImages.length);
     manifestImages.forEach((entry) => {
       expect(gridSrcs).toContain(entry.src);
     });

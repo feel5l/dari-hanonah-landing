@@ -1,18 +1,12 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-02T16:04:37.166Z",
+  "updatedAt": "2026-08-02T16:05:00.123Z",
   "images": [
     {
       "id": "default-3",
       "src": "https://images.unsplash.com/photo-1544776193-352d25ca82cd?w=600&q=80",
       "alt": "تعلم القراءة",
       "caption": "تعلم القراءة"
-    },
-    {
-      "id": "default-4",
-      "src": "https://images.unsplash.com/photo-1596495577886-d920f1fb7238?w=600&q=80",
-      "alt": "أنشطة فنية",
-      "caption": "أنشطة فنية"
     },
     {
       "id": "default-6",

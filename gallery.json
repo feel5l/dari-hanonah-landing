@@ -1,13 +1,7 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-02T17:52:57.234Z",
+  "updatedAt": "2026-08-02T18:19:54.694Z",
   "images": [
-    {
-      "id": "default-3",
-      "src": "https://images.unsplash.com/photo-1544776193-352d25ca82cd?w=600&q=80",
-      "alt": "تعلم القراءة",
-      "caption": "تعلم القراءة"
-    },
     {
       "id": "default-6",
       "src": "https://images.unsplash.com/photo-1566004100631-35d015d6a491?w=600&q=80",

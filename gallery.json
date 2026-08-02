@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-02T15:47:35.885Z",
+  "updatedAt": "2026-08-02T16:04:37.166Z",
   "images": [
     {
       "id": "default-3",
@@ -13,12 +13,6 @@
       "src": "https://images.unsplash.com/photo-1596495577886-d920f1fb7238?w=600&q=80",
       "alt": "أنشطة فنية",
       "caption": "أنشطة فنية"
-    },
-    {
-      "id": "default-5",
-      "src": "https://images.unsplash.com/photo-1588072432836-e10032774350?w=600&q=80",
-      "alt": "لعب الأطفال",
-      "caption": "لعب الأطفال"
     },
     {
       "id": "default-6",

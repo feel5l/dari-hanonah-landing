@@ -82,4 +82,20 @@ test.describe('Landing page regression guards', () => {
     await expect(page.locator('#uploadProgressAdmin')).toBeVisible();
     await expect(page.locator('.gallery-grid .gallery-item')).toHaveCount(9, { timeout: 10000 });
   });
+
+  test('shows the upload tab inside the admin dashboard on mobile without horizontal scrolling', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+
+    await page.locator('.upload-btn').click();
+    await expect(page.locator('#adminLoginModal')).toBeVisible();
+
+    await page.locator('#adminPasswordInput').fill('dari2024');
+    await page.locator('#adminLoginModal button[type="submit"]').click();
+
+    const uploadTab = page.locator('.admin-tab[data-tab="upload"]');
+    await expect(page.locator('#adminDashboardModal')).toBeVisible();
+    await expect(uploadTab).toBeVisible();
+    await expect(uploadTab).toBeInViewport();
+  });
 });

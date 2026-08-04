@@ -13,6 +13,10 @@ Static HTML landing page for the "Dari Alhanonah" (داري الحنونة) dayc
 - Worker unit tests: `npm run test:worker` (`node --test`, no browser or network needed — GitHub calls are stubbed).
 - Landing-page e2e tests: `npm run test:e2e`. Playwright auto-starts its own `python3 -m http.server 4173` (via `webServer` in `playwright.config.ts`) and reuses an already-running one, so you do not have to start the server yourself for tests.
 
+### Gallery images (performance)
+- Uploaded images are downscaled + JPEG-compressed in the browser before being sent to the CDN or embedded as a base64 fallback (`compressImageForUpload` in `index.html`, max 1600px / quality 0.82). This keeps `gallery.json` small so the published site stays fast to load and reliable to commit.
+- `gallery.json` embeds base64 images when no CDN (Cloudinary/ImgBB) upload succeeds. If it grows large again, recompress the existing entries with `node scripts/optimize-gallery-images.mjs` (reuses the Playwright Chromium; same parameters as the upload path).
+
 ### Notes / gotchas
 - There is no linter or build step configured in this repo (no ESLint/Prettier/bundler). "Lint" and "build" are not applicable; the site ships `index.html` as-is.
 - A `GET /favicon.ico 404` appears in the browser console — it is harmless and unrelated to app functionality.

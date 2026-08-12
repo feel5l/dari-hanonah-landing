@@ -43,7 +43,18 @@ test.describe('Landing page regression guards', () => {
     await expect(mobileMenu).toHaveClass(/active/);
   });
 
-  test('submits the contact form and shows the success state without changing the hook', async ({ page }) => {
+  test('submits the contact form and opens WhatsApp with the booking details', async ({ page }) => {
+    const openedUrls = [];
+    await page.exposeFunction('__recordWaOpen', (url) => {
+      openedUrls.push(url);
+    });
+    await page.addInitScript(() => {
+      window.open = (url) => {
+        if (typeof window.__recordWaOpen === 'function') window.__recordWaOpen(String(url));
+        return null;
+      };
+    });
+
     await page.goto('/');
 
     await page.locator('#motherName').fill('أم محمد');
@@ -60,6 +71,16 @@ test.describe('Landing page regression guards', () => {
     await expect(submitButton).toHaveClass(/loading/);
     await expect(successMessage).toHaveClass(/show/, { timeout: 5000 });
     await expect(page.locator('#contactForm')).toHaveAttribute('onsubmit', 'handleFormSubmit(event)');
+
+    await expect.poll(() => openedUrls.length).toBeGreaterThan(0);
+    const waUrl = openedUrls[0];
+    expect(waUrl).toContain('https://wa.me/966546425459?text=');
+    const decoded = decodeURIComponent(waUrl.split('text=')[1] || '');
+    expect(decoded).toContain('أم محمد');
+    expect(decoded).toContain('0501234567');
+    expect(decoded).toContain('من 3 إلى 4 سنوات');
+    expect(decoded).toContain('برنامج الروضة');
+    expect(decoded).toContain('أرغب في زيارة تعريفية هذا الأسبوع');
   });
 
   test('allows admin users to reach the upload tab and choose an image without client-side failure', async ({ page }) => {

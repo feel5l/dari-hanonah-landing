@@ -2424,12 +2424,12 @@
               <textarea id="notes" class="form-textarea" placeholder="اكتبي أي ملاحظات أو استفسارات خاصة"></textarea>
             </div>
             <button type="submit" class="btn btn-primary form-submit">
-              <span class="btn-text">إرسال الطلب</span>
+              <span class="btn-text">إرسال الطلب عبر واتساب</span>
               <span class="spinner"></span>
             </button>
           </form>
           <div class="success-message" id="successMessage">
-            ✅ تم إرسال طلبك بنجاح! سنتواصل معك في أقرب وقت.
+            ✅ تم تجهيز طلبك! سيتم فتح واتساب لإرسال الحجز مباشرة.
           </div>
         </div>
       </div>
@@ -2602,28 +2602,66 @@
       });
     });
 
-    // Form Submission
+    // Booking form → WhatsApp (same number used by the floating button)
+    const WHATSAPP_BOOKING_NUMBER = '966546425459';
+
+    function getSelectedOptionLabel(selectEl) {
+      if (!selectEl || selectEl.selectedIndex < 0) return '';
+      return (selectEl.options[selectEl.selectedIndex].textContent || '').trim();
+    }
+
+    function buildWhatsAppBookingMessage(form) {
+      const motherName = (form.querySelector('#motherName')?.value || '').trim();
+      const phone = (form.querySelector('#phone')?.value || '').trim();
+      const childAge = getSelectedOptionLabel(form.querySelector('#childAge'));
+      const programType = getSelectedOptionLabel(form.querySelector('#programType'));
+      const notes = (form.querySelector('#notes')?.value || '').trim();
+
+      const lines = [
+        'السلام عليكم، أرغب في حجز زيارة / تسجيل في دار الحنونة:',
+        '',
+        `👤 اسم الأم: ${motherName}`,
+        `📱 رقم الجوال: ${phone}`,
+        `👶 عمر الطفل: ${childAge}`,
+        `🏫 البرنامج: ${programType}`
+      ];
+
+      if (notes) {
+        lines.push(`📝 ملاحظات: ${notes}`);
+      }
+
+      lines.push('', 'بانتظار تواصلكم، شكرًا لكم.');
+      return lines.join('\n');
+    }
+
+    function openWhatsAppBooking(message) {
+      const url = `https://wa.me/${WHATSAPP_BOOKING_NUMBER}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+      return url;
+    }
+
+    // Form Submission — opens WhatsApp with the booking details prefilled
     function handleFormSubmit(event) {
       event.preventDefault();
-      
+
       const form = event.target;
       const submitBtn = form.querySelector('.form-submit');
       const successMessage = document.getElementById('successMessage');
-      
-      // Show loading state
+      const message = buildWhatsAppBookingMessage(form);
+
       submitBtn.classList.add('loading');
-      
-      // Simulate form submission (replace with actual API call)
+
+      // Brief loading state, then hand off to WhatsApp
       setTimeout(() => {
+        openWhatsAppBooking(message);
         submitBtn.classList.remove('loading');
         form.reset();
         successMessage.classList.add('show');
-        
-        // Hide success message after 5 seconds
+
         setTimeout(() => {
           successMessage.classList.remove('show');
         }, 5000);
-      }, 2000);
+      }, 600);
     }
 
     // Smooth Scroll for anchor links
